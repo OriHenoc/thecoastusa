@@ -11,7 +11,7 @@ Pour installer, il faut cloner puis faire : npm install
 
 Pour lancer : npm server.js
 
-## Auteurs
+## Auteur
 Développeur : C0MM1T
 
 ## Plus d'infos
