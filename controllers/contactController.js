@@ -19,50 +19,50 @@ const transporter = nodemailer.createTransport({
 exports.contacter = async (req, res) => {
     try {
         const { nomComplet, telephone, email, sujet, message } = req.body;
-        console.log(req.body)
+
+        console.log(req.body);
+
+        // Création du contact
         const newContact = new Contact({ nomComplet, telephone, email, sujet, message });
         await newContact.save();
 
-        const cible = "";
+        // Mappage des sujets aux adresses e-mail cibles
+        const emailMap = {
+            Inscription: "inscription@thecoastusa.com",
+            Paiement: "paiement@thecoastusa.com",
+            Formation: "formation@thecoastusa.com",
+            Dossier: "dossier@thecoastusa.com",
+            Autre: "contact@thecoastusa.com"
+        };
 
-        switch (sujet) {
-            case "Inscription":
-                cible = "inscription@thecoastusa.com"
-                break;
-            case "Paiement":
-                cible = "paiement@thecoastusa.com"
-                break;
-            case "Formation":
-                cible = "formation@thecoastusa.com"
-                break;                
-            case "Dossier":
-                cible = "dossier@thecoastusa.com"
-                break;
-            case "Autre":
-                cible = "contact@thecoastusa.com"
-                break;
-            default:
-                cible = "info@thecoastusa.com"
-                break;
-        }
+        // Utiliser l'adresse par défaut si le sujet n'est pas dans le mappage
+        const cible = emailMap[sujet] || "info@thecoastusa.com";
 
-        console.log(cible)
+        console.log(`Email cible : ${cible}`);
 
-        // Envoyer l'e-mail
+        // Envoi de l'e-mail
         await transporter.sendMail({
             from: email,
             to: cible,
-            subject: sujet,
-            html: `<h2>Hello, vous avez un message de ${newContact.nomComplet} : </h2><br/><h3>${newContact.message}</h3><h4>Joignable au : ${newContact.telephone}</h4>`
+            subject: sujet || "Demande de contact",
+            html: `
+                <h2>Hello,</h2>
+                <p>Vous avez reçu un message de : <strong>${nomComplet}</strong></p>
+                <p><strong>Sujet :</strong> ${sujet || "Non spécifié"}</p>
+                <p><strong>Message :</strong> ${message}</p>
+                <p><strong>Joignable au :</strong> ${telephone}</p>
+            `
         });
 
         res.status(201).json({
-            message: `Merci, ${newContact.nomComplet} ! Votre message a été soumis et nous vous reviendrons dans les plus brefs délais.`,
+            message: `Merci, ${nomComplet} ! Votre message a été soumis et nous vous reviendrons dans les plus brefs délais.`,
             contact: newContact
         });
     } catch (error) {
-        res.status(400).json({
-            message: 'Une erreur est survenue !',
+        console.error("Erreur dans contacter:", error);
+
+        res.status(500).json({
+            message: "Une erreur est survenue lors de la soumission du message.",
             erreur: error.message
         });
     }
