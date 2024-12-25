@@ -2,14 +2,16 @@ const Contact = require('../models/Contact');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Configuration du transporteur avec le serveur SMTP
 const transporter = nodemailer.createTransport({
-    host: 'smtp.thecoastusa.com',
+    //host: 'mail.thecoastusa.com',
+    host: 'mail.committeam.com',
     port: 587,
     secure: false,
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        // user: process.env.EMAIL_USER,
+        // pass: process.env.EMAIL_PASS
+        user: "acomprix@committeam.com",
+        pass: "acomprix@EMAIL"
     },
     tls: {
         rejectUnauthorized: false
