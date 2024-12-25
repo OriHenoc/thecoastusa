@@ -9,6 +9,7 @@ const filleRoute = require('./fille');
 const langueRoute = require('./langue');
 const photosFamilleRoute = require('./photosFamille');
 const photosFilleRoute = require('./photosFille');
+const contactRoute = require('./contact');
 
 router.use('/auth', authRoute);
 router.use('/pays', paysRoute);
@@ -18,5 +19,6 @@ router.use('/fille', filleRoute);
 router.use('/langue', langueRoute);
 router.use('/photosFamille', photosFamilleRoute);
 router.use('/photosFille', photosFilleRoute);
+router.use('/contact', contactRoute);
 
 module.exports = router;

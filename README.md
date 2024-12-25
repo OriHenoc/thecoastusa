@@ -1,7 +1,7 @@
 # TheCoastUSA Backend
 
 ## Description
-TheCoastUSA est unE plateforme de mise en relation entre filles au pair et familles américaines.
+TheCoastUSA est une plateforme de mise en relation entre filles au pair et familles américaines.
 
 ## Installation
 
@@ -11,7 +11,7 @@ Pour installer, il faut cloner puis faire : npm install
 
 Pour lancer : npm server.js
 
-## Auteur
+## Auteurs
 Développeur : C0MM1T
 
 ## Plus d'infos
