@@ -4,7 +4,7 @@ require('dotenv').config();
 
 // Configuration du transporteur avec le serveur SMTP
 const transporter = nodemailer.createTransport({
-    host: 'mail.thecoastusa.com',
+    host: 'smtp.thecoastusa.com',
     port: 587,
     secure: false,
     auth: {
