@@ -32,7 +32,7 @@ const upload = multer({
 });
 
 function checkFileType(file, cb) {
-    const allowedFileTypes = /jpeg|jpg|png|webp/;
+    const allowedFileTypes = /jpeg|jpg|png|svg|webp/;
     const mimetype = allowedFileTypes.test(file.mimetype);
     const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
 
