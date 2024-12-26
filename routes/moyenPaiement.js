@@ -17,7 +17,7 @@ const router = express.Router();
 router.post('/', authMiddleware, createMoyenPaiement);
 router.post('/uploadLogo/:id', authMiddleware, upload.single('logo'), uploadLogo);
 router.get('/', getAllMoyenPaiement);
-router.get('/actifs', getAllDispoMoyenPaiement);
+router.get('/disponibles', getAllDispoMoyenPaiement);
 router.get('/:id', getMoyenPaiementById);
 router.put('/:id/updateInfos', authMiddleware, updateMoyenPaiement);
 router.delete('/:id', authMiddleware, deleteMoyenPaiement);
