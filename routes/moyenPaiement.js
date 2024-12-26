@@ -14,13 +14,13 @@ const {
 
 const router = express.Router();
 
-router.post('/', authMiddleware, createMoyenPaiement);
-router.post('/uploadLogo/:id', authMiddleware, upload.single('logo'), uploadLogo);
+router.post('/', createMoyenPaiement);
+router.post('/uploadLogo/:id', upload.single('logo'), uploadLogo);
 router.get('/', getAllMoyenPaiement);
 router.get('/disponibles', getAllDispoMoyenPaiement);
 router.get('/:id', getMoyenPaiementById);
-router.put('/:id/updateInfos', authMiddleware, updateMoyenPaiement);
-router.delete('/:id', authMiddleware, deleteMoyenPaiement);
-router.patch('/:id/toggleStatus', authMiddleware, toggleMoyenPaiementStatus);
+router.put('/:id/updateInfos', updateMoyenPaiement);
+router.delete('/:id', deleteMoyenPaiement);
+router.patch('/:id/toggleStatus', toggleMoyenPaiementStatus);
 
 module.exports = router;
