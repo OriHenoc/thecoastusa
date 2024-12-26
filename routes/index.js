@@ -10,6 +10,7 @@ const langueRoute = require('./langue');
 const photosFamilleRoute = require('./photosFamille');
 const photosFilleRoute = require('./photosFille');
 const contactRoute = require('./contact');
+const moyenPaiementRoute = require('./moyenPaiement');
 
 router.use('/auth', authRoute);
 router.use('/pays', paysRoute);
@@ -20,5 +21,6 @@ router.use('/langue', langueRoute);
 router.use('/photosFamille', photosFamilleRoute);
 router.use('/photosFille', photosFilleRoute);
 router.use('/contact', contactRoute);
+router.use('/moyenPaiement', moyenPaiementRoute);
 
 module.exports = router;

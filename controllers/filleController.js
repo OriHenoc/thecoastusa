@@ -4,6 +4,7 @@ exports.createFille = async (req, res) => {
     try {
         const { biographie, experience, langues, utilisateurID, videoDePresentation, photosFille } = req.body;
         const newFille = new Fille({ biographie, experience, langues, utilisateurID, videoDePresentation, photosFille });
+        const existingFille = await Fille.findOne({ utilisateurID });
         if (existingFille) {
             return res.status(400).json({ message: 'Fille déjà enregistrée.' });
         }

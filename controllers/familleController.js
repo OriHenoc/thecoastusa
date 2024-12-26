@@ -4,6 +4,7 @@ exports.createFamille = async (req, res) => {
     try {
         const { nombreEnfants, etatID, utilisateurID } = req.body;
         const newFamille = new Famille({ nombreEnfants, etatID, utilisateurID });
+        const existingFamille = await Famille.findOne({ utilisateurID });
         if (existingFamille) {
             return res.status(400).json({ message: 'Famille déjà enregistrée.' });
         }

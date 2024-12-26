@@ -4,6 +4,7 @@ exports.createEtat = async (req, res) => {
     try {
         const { nom, latitude, longitude } = req.body;
         const newEtat = new Etat({ nom, latitude, longitude });
+        const existingEtat = await Etat.findOne({ nom });
         if (existingEtat) {
             return res.status(400).json({ message: 'Etat déjà enregistré.' });
         }

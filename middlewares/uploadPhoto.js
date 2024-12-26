@@ -12,6 +12,9 @@ const storage = multer.diskStorage({
         if (file.fieldname === 'photoDeProfil') {
             cb(null, 'uploads/images/profils/')
         }
+        if (file.fieldname === 'logo') {
+            cb(null, 'uploads/images/moyens/')
+        }
     },
     filename: (req, file, cb) =>{
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));

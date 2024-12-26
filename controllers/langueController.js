@@ -4,6 +4,7 @@ exports.createLangue = async (req, res) => {
     try {
         const { nom } = req.body;
         const newLangue = new Langue({ nom });
+        const existingLangue = await Langue.findOne({ nom });
         if (existingLangue) {
             return res.status(400).json({ message: 'Langue déjà enregistrée.' });
         }
