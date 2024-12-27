@@ -4,8 +4,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const Paiement = require('../models/Paiement');
 
-const multer = require('multer');
-
 exports.createPaiement = async (req, res) => {
     try {
         const { moyenID, montant, utilisateurID } = req.body;
@@ -90,94 +88,45 @@ exports.confirmPaiementStatus = async (req, res) => {
     }
 };
 
-// exports.uploadPreuve = async (req, res) => {
-//     try {
-//         const paiement = await Paiement.findById(req.params.id);
-//         if (!paiement) {
-//             return res.status(404).json({ message: 'Paiement non trouvé !' });
-//         }
-        
-//          // Préparer le fichier à envoyer
-//          const localFilePath = path.resolve('uploads/images/preuves', req.file.filename);
-//          const form = new FormData();
-//          form.append('file', fs.createReadStream(localFilePath));
- 
-//          // Envoyer le fichier à l'API HTTP distante
-//          const apiEndpoint = 'https://thecoastusa.com/api/uploadPreuvePaiement.php';
-//          const response = await axios.post(apiEndpoint, form, {
-//              headers: {
-//                  ...form.getHeaders() // Inclut les en-têtes nécessaires pour FormData
-//              }
-//          });
-
-//         // Vérifier la réponse de l'API
-//         if (response.data.status !== 'success') {
-//             throw new Error(response.data.message || 'Erreur lors du téléchargement du fichier');
-//         }
-
-//         console.log('Fichier transféré avec succès :', response.data);
-
-//         paiement.preuve = `/uploads/images/preuves/${req.file.filename}`;
-//         await paiement.save();
-
-//         res.status(200).json({
-//             message: 'Le paiement a reçu sa preuve !',
-//             paiement: paiement
-//         });
-
-//     } catch (error) {
-//         res.status(400).json({
-//             message: 'Mauvaise requête !',
-//             erreur: error.message
-//         });
-//     }
-// };
-
 exports.uploadPreuve = async (req, res) => {
     try {
         const paiement = await Paiement.findById(req.params.id);
         if (!paiement) {
             return res.status(404).json({ message: 'Paiement non trouvé !' });
         }
+        
+         // Préparer le fichier à envoyer
+         const localFilePath = path.resolve('uploads/images/preuves', req.file.filename);
+         const form = new FormData();
+         form.append('file', fs.createReadStream(localFilePath));
+ 
+         // Envoyer le fichier à l'API HTTP distante
+         const apiEndpoint = 'https://thecoastusa.com/api/uploadPreuvePaiement.php';
+         const response = await axios.post(apiEndpoint, form, {
+             headers: {
+                 ...form.getHeaders() // Inclut les en-têtes nécessaires pour FormData
+             }
+         });
 
-        if (!req.file) {
-            return res.status(400).json({ message: 'Aucun fichier "preuve" reçu !' });
-        }
-
-        // Créer un formulaire pour envoyer le fichier au serveur distant
-        const form = new FormData();
-        form.append('preuve', req.file.buffer, req.file.originalname); // Utilise le fichier en mémoire
-
-        // URL de l'API PHP distante
-        const apiEndpoint = 'https://thecoastusa.com/api/uploadPreuvePaiement.php';
-
-        // Envoyer le fichier à l'API distante
-        const response = await axios.post(apiEndpoint, form, {
-            headers: {
-                ...form.getHeaders(), // Inclut les en-têtes nécessaires pour le formulaire
-            },
-        });
-
-        // Vérifier si le téléchargement a réussi
+        // Vérifier la réponse de l'API
         if (response.data.status !== 'success') {
-            throw new Error(response.data.message || 'Erreur lors du téléchargement de la preuve');
+            throw new Error(response.data.message || 'Erreur lors du téléchargement du fichier');
         }
 
         console.log('Fichier transféré avec succès :', response.data);
 
-        // Mettre à jour le paiement avec l'URL de la preuve reçue
-        paiement.preuve = `/uploads/images/preuves/${req.file.originalname}`; // Assurez-vous que ceci correspond à la réponse PHP
+        paiement.preuve = `/uploads/images/preuves/${req.file.filename}`;
         await paiement.save();
 
         res.status(200).json({
             message: 'Le paiement a reçu sa preuve !',
-            paiement,
+            paiement: paiement
         });
+
     } catch (error) {
-        console.error('Erreur lors de uploadPreuve :', error.message);
-        res.status(500).json({
-            message: 'Une erreur est survenue lors de l\'envoi de la preuve',
-            erreur: error.message,
+        res.status(400).json({
+            message: 'Mauvaise requête !',
+            erreur: error.message
         });
     }
 };
