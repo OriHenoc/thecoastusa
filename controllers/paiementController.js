@@ -6,6 +6,8 @@ const Paiement = require('../models/Paiement');
 
 exports.soumettrePaiement = async (req, res) => {
     try {
+        console.log("soumis c : ", req.body)
+        console.log("soumis f : ", req.file)
         // Vérifiez si un fichier est présent
         let fichierPath = null;
         if (req.file) {
