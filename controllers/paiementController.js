@@ -11,9 +11,16 @@ exports.soumettrePaiement = async (req, res) => {
         // Vérifiez si un fichier est présent
         let fichierPath = null;
         if (req.file) {
-            fichierPath = path.resolve('uploads/images/preuves', req.file.filename);
+            const uploadPath = path.resolve('uploads/images/preuves');
+            if (!fs.existsSync(uploadPath)) {
+                fs.mkdirSync(uploadPath, { recursive: true });
+            }
+
+            fichierPath = path.join(uploadPath, req.file.filename);
         }
 
+        console.log('Fichier enregistré à :', fichierPath);
+        
         // Préparer les données de la soumission
         const { utilisateurID, moyenID, montant, commentaire } = req.body;
 
