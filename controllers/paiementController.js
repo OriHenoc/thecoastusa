@@ -146,7 +146,7 @@ exports.uploadPreuve = async (req, res) => {
 
         // Créer un formulaire pour envoyer le fichier au serveur distant
         const form = new FormData();
-        form.append('file', req.file.buffer, req.file.originalname); // Utilise le fichier en mémoire
+        form.append('preuve', req.file.buffer, req.file.originalname); // Utilise le fichier en mémoire
 
         // URL de l'API PHP distante
         const apiEndpoint = 'https://thecoastusa.com/api/uploadPreuvePaiement.php';
