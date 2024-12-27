@@ -1,3 +1,5 @@
+const axios = require('axios');
+const FormData = require('form-data');
 const fs = require('fs-extra');
 const path = require('path');
 const MoyenPaiement = require('../models/MoyenPaiement');
@@ -133,24 +135,26 @@ exports.uploadLogo = async (req, res) => {
             return res.status(404).json({ message: 'Moyen de paiement non trouvé !' });
         }
         
-        // Supprimer l'ancien logo s'il existe
-        if (moyen.logo) {
-            const oldLogoPath = path.resolve(__dirname, '..', 'uploads/images/moyens', path.basename(moyen.logo));
-            
-            try {
-                const fileExists = await fs.pathExists(oldLogoPath);
-                if (fileExists) {
-                    await fs.remove(oldLogoPath);
-                    console.log('Ancien logo supprimé avec succès');
-                } else {
-                    console.log('Ancien logo non trouvé');
-                }
-            } catch (err) {
-                console.error('Erreur lors de la suppression de l\'ancien logo :', err);
-            }
-        } else {
-            console.log('Aucun ancien logo à supprimer');
+         // Préparer le fichier à envoyer
+         const localFilePath = path.resolve('uploads/images/moyens', req.file.filename);
+         const form = new FormData();
+         form.append('file', fs.createReadStream(localFilePath));
+ 
+         // Envoyer le fichier à l'API HTTP distante
+         const apiEndpoint = 'https://thecoastusa.com/api/uploadlogo.php';
+         const response = await axios.post(apiEndpoint, form, {
+             headers: {
+                 ...form.getHeaders() // Inclut les en-têtes nécessaires pour FormData
+             }
+         });
+
+        // Vérifier la réponse de l'API
+        if (response.data.status !== 'success') {
+            throw new Error(response.data.message || 'Erreur lors du téléchargement du fichier');
         }
+
+        console.log('Fichier transféré avec succès :', response.data);
+
 
         // Mettre à jour le logo
         moyen.logo = `/uploads/images/moyens/${req.file.filename}`;
