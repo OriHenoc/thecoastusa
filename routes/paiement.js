@@ -12,7 +12,7 @@ const {
 
 const router = express.Router();
 router.post('/', createPaiement);
-router.post('/uploadPreuve/:id', upload.single('logo'), uploadPreuve);
+router.post('/uploadPreuve/:id', upload.single('preuve'), uploadPreuve);
 router.get('/', getAllPaiement);
 router.get('/confirmes', getAllConfirmedPaiement);
 router.get('/:id', getPaiementById);
