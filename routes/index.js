@@ -11,6 +11,7 @@ const photosFamilleRoute = require('./photosFamille');
 const photosFilleRoute = require('./photosFille');
 const contactRoute = require('./contact');
 const moyenPaiementRoute = require('./moyenPaiement');
+const paiementRoute = require('./paiement');
 
 router.use('/auth', authRoute);
 router.use('/pays', paysRoute);
@@ -22,5 +23,6 @@ router.use('/photosFamille', photosFamilleRoute);
 router.use('/photosFille', photosFilleRoute);
 router.use('/contact', contactRoute);
 router.use('/moyenPaiement', moyenPaiementRoute);
+router.use('/paiement', paiementRoute);
 
 module.exports = router;
