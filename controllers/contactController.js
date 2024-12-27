@@ -3,15 +3,12 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-    //host: 'mail.thecoastusa.com',
-    host: 'mail.committeam.com',
+    host: 'mail.thecoastusa.com',
     port: 587,
     secure: false,
     auth: {
-        // user: process.env.EMAIL_USER,
-        // pass: process.env.EMAIL_PASS
-        user: "acomprix@committeam.com",
-        pass: "acomprix@EMAIL"
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     },
     tls: {
         rejectUnauthorized: false
