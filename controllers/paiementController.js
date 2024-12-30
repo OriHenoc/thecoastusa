@@ -131,51 +131,47 @@ exports.uploadPreuve = async (req, res) => {
     }
 };
 
+
 exports.soumettrePaiement = async (req, res) => {
     try {
-        // Vérifiez si un fichier est présent
-        let fichierPath = null;
-        if (req.file) {
-            fichierPath = path.resolve('uploads/images/preuves', req.file.filename);
+        if (!req.file || !req.file.filename) {
+            return res.status(400).json({ message: "Aucun fichier n'a été fourni." });
         }
 
-        // Préparer les données de la soumission
+        const fichierPath = path.resolve('uploads/images/preuves', req.file.filename);
+
         const { utilisateurID, moyenID, montant, commentaire } = req.body;
 
-        // Validation de base
         if (!utilisateurID || !moyenID || !montant) {
             return res.status(400).json({ message: "Certains champs obligatoires sont manquants." });
         }
 
-        // Si un fichier est présent, le transférer à l'API distante
         let fichierUrl = null;
-        if (fichierPath) {
-            const form = new FormData();
-            form.append('file', fs.createReadStream(fichierPath));
-            const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadPreuvePaiement.php';
+        const form = new FormData();
+        form.append('file', fs.createReadStream(fichierPath));
+        const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadPreuvePaiement.php';
 
-            const response = await axios.post(apiEndpoint, form, {
-                headers: {
-                    ...form.getHeaders(),
-                },
-            });
+        const response = await axios.post(apiEndpoint, form, {
+            headers: {
+                ...form.getHeaders(),
+            },
+        });
 
-            // Vérifiez la réponse de l'API
-            if (response.data.status !== 'success') {
-                throw new Error(response.data.message || 'Erreur lors du téléchargement du fichier');
-            }
-
-            console.log('Fichier transféré avec succès :', response.data);
-            fichierUrl = response.data.filePath; // Assurez-vous que l'API retourne un champ `filePath` pour l'URL.
+        if (response.data.status !== 'success') {
+            throw new Error(response.data.message || 'Erreur lors du téléchargement du fichier');
         }
 
-        // Créer un nouveau paiement
+        fichierUrl = response.data.filePath;
+        if (!fichierUrl) {
+            return res.status(400).json({ message: "URL de la preuve manquante." });
+        }
+
         const paiement = new Paiement({
             utilisateurID,
             moyenID,
             montant,
             commentaire,
-            preuve: fichierUrl, // Enregistrer l'URL du fichier si présent
+            preuve: fichierUrl,
         });
 
         await paiement.save();
@@ -192,3 +188,65 @@ exports.soumettrePaiement = async (req, res) => {
         });
     }
 };
+
+
+// exports.soumettrePaiement = async (req, res) => {
+//     try {
+//         // Vérifiez si un fichier est présent
+//         let fichierPath = null;
+//         fichierPath = path.resolve('uploads/images/preuves', req.file.filename);
+        
+
+//         // Préparer les données de la soumission
+//         const { utilisateurID, moyenID, montant, commentaire } = req.body;
+
+//         // Validation de base
+//         if (!utilisateurID || !moyenID || !montant) {
+//             return res.status(400).json({ message: "Certains champs obligatoires sont manquants." });
+//         }
+
+//         // Si un fichier est présent, le transférer à l'API distante
+//         let fichierUrl = null;
+//         if (fichierPath) {
+//             const form = new FormData();
+//             form.append('file', fs.createReadStream(fichierPath));
+//             const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadPreuvePaiement.php';
+
+//             const response = await axios.post(apiEndpoint, form, {
+//                 headers: {
+//                     ...form.getHeaders(),
+//                 },
+//             });
+
+//             // Vérifiez la réponse de l'API
+//             if (response.data.status !== 'success') {
+//                 throw new Error(response.data.message || 'Erreur lors du téléchargement du fichier');
+//             }
+
+//             console.log('Fichier transféré avec succès :', response.data);
+//             fichierUrl = response.data.filePath; // Assurez-vous que l'API retourne un champ `filePath` pour l'URL.
+//         }
+
+//         // Créer un nouveau paiement
+//         const paiement = new Paiement({
+//             utilisateurID,
+//             moyenID,
+//             montant,
+//             commentaire,
+//             preuve: fichierUrl, // Enregistrer l'URL du fichier si présent
+//         });
+
+//         await paiement.save();
+
+//         res.status(201).json({
+//             message: "Paiement enregistré avec succès.",
+//             paiement,
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({
+//             message: "Une erreur est survenue lors de l'enregistrement de la soumission.",
+//             erreur: error.message,
+//         });
+//     }
+// };
