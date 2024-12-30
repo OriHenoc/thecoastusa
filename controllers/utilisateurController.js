@@ -303,7 +303,7 @@ exports.uploadPhotoProfil = async (req, res) => {
         form.append('file', fs.createReadStream(localFilePath));
 
         // Envoyer le fichier à l'API HTTP distante
-        const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadphoto.php';
+        const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadPhoto.php';
         const response = await axios.post(apiEndpoint, form, {
             headers: {
                 ...form.getHeaders(), // Inclut les en-têtes nécessaires pour FormData
@@ -320,7 +320,7 @@ exports.uploadPhotoProfil = async (req, res) => {
         // Supprimer l'ancienne photo si elle existe
         if (utilisateur.photoDeProfil) {
             const oldPhotoPath = path.resolve(
-                __dirname, '/uploads/images/profils',
+                __dirname, '../uploads/images/profils',
                 path.basename(utilisateur.photoDeProfil)
             );
 
@@ -340,7 +340,7 @@ exports.uploadPhotoProfil = async (req, res) => {
         }
 
         // Mettre à jour la photo de profil
-        utilisateur.photoDeProfil = response.data.filePath; // Utiliser le chemin renvoyé par l'API distante
+        utilisateur.photoDeProfil = `/uploads/images/profils/${req.file.filename}`; // Utiliser le chemin renvoyé par l'API distante
         await utilisateur.save();
 
         res.status(200).json({
