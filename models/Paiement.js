@@ -8,7 +8,7 @@ const PaiementSchema = new Schema({
     },
     preuve: {
         type: String,
-        required: false
+        required: [true, 'La preuve est requise']
     },
     utilisateurID: {
         type: Schema.Types.ObjectId,
