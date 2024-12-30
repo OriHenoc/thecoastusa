@@ -320,9 +320,7 @@ exports.uploadPhotoProfil = async (req, res) => {
         // Supprimer l'ancienne photo si elle existe
         if (utilisateur.photoDeProfil) {
             const oldPhotoPath = path.resolve(
-                __dirname,
-                '..',
-                'uploads/images/profils',
+                __dirname, '/uploads/images/profils',
                 path.basename(utilisateur.photoDeProfil)
             );
 
