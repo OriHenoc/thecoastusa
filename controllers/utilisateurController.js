@@ -243,18 +243,87 @@ exports.toggleUtilisateurStatus = async (req, res) => {
     }
 };
 
-// Télécharger une photo de profil
+// // Télécharger une photo de profil
+// exports.uploadPhotoProfil = async (req, res) => {
+//     try {
+//         const utilisateur = await Utilisateur.findById(req.params.id);
+//         if (!utilisateur) {
+//             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
+//         }
+        
+//         // Supprimer l'ancienne photo si elle existe
+//         if (utilisateur.photoDeProfil) {
+//             const oldPhotoPath = path.resolve(__dirname, '..', 'uploads/images/profils', path.basename(utilisateur.photoDeProfil));
+            
+//             try {
+//                 const fileExists = await fs.pathExists(oldPhotoPath);
+//                 if (fileExists) {
+//                     await fs.remove(oldPhotoPath);
+//                     console.log('Ancienne photo supprimée avec succès');
+//                 } else {
+//                     console.log('Ancienne photo non trouvée');
+//                 }
+//             } catch (err) {
+//                 console.error('Erreur lors de la suppression de l\'ancienne photo :', err);
+//             }
+//         } else {
+//             console.log('Aucune ancienne photo à supprimer');
+//         }
+
+//         // Mettre à jour la photo de profil
+//         utilisateur.photoDeProfil = `/uploads/images/profils/${req.file.filename}`;
+//         await utilisateur.save();
+
+//         res.status(200).json({
+//             message: 'La photo de profil a été mise à jour !',
+//             utilisateur: utilisateur
+//         });
+
+//     } catch (error) {
+//         res.status(400).json({
+//             message: 'Mauvaise requête !',
+//             erreur: error.message
+//         });
+//     }
+// };
+
+// Télécharger une photo de profil en utilisant un script PHP pour le stockage
 exports.uploadPhotoProfil = async (req, res) => {
     try {
         const utilisateur = await Utilisateur.findById(req.params.id);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
-        
+
+        // Préparer le fichier à envoyer
+        const localFilePath = path.resolve('uploads/images/profils', req.file.filename);
+        const form = new FormData();
+        form.append('file', fs.createReadStream(localFilePath));
+
+        // Envoyer le fichier à l'API HTTP distante
+        const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadphoto.php';
+        const response = await axios.post(apiEndpoint, form, {
+            headers: {
+                ...form.getHeaders(), // Inclut les en-têtes nécessaires pour FormData
+            },
+        });
+
+        // Vérifier la réponse de l'API
+        if (response.data.status !== 'success') {
+            throw new Error(response.data.message || 'Erreur lors du téléchargement du fichier');
+        }
+
+        console.log('Fichier transféré avec succès :', response.data);
+
         // Supprimer l'ancienne photo si elle existe
         if (utilisateur.photoDeProfil) {
-            const oldPhotoPath = path.resolve(__dirname, '..', 'uploads/images/profils', path.basename(utilisateur.photoDeProfil));
-            
+            const oldPhotoPath = path.resolve(
+                __dirname,
+                '..',
+                'uploads/images/profils',
+                path.basename(utilisateur.photoDeProfil)
+            );
+
             try {
                 const fileExists = await fs.pathExists(oldPhotoPath);
                 if (fileExists) {
@@ -264,25 +333,24 @@ exports.uploadPhotoProfil = async (req, res) => {
                     console.log('Ancienne photo non trouvée');
                 }
             } catch (err) {
-                console.error('Erreur lors de la suppression de l\'ancienne photo :', err);
+                console.error("Erreur lors de la suppression de l'ancienne photo :", err);
             }
         } else {
             console.log('Aucune ancienne photo à supprimer');
         }
 
         // Mettre à jour la photo de profil
-        utilisateur.photoDeProfil = `/uploads/images/profils/${req.file.filename}`;
+        utilisateur.photoDeProfil = response.data.filePath; // Utiliser le chemin renvoyé par l'API distante
         await utilisateur.save();
 
         res.status(200).json({
             message: 'La photo de profil a été mise à jour !',
-            utilisateur: utilisateur
+            utilisateur: utilisateur,
         });
-
     } catch (error) {
         res.status(400).json({
             message: 'Mauvaise requête !',
-            erreur: error.message
+            erreur: error.message,
         });
     }
 };
