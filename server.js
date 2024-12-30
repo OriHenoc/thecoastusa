@@ -42,7 +42,7 @@ const start = async () => {
         throw err;
     }
 
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 0;
     app.listen(port, () => {
         console.log(`Le serveur tourne sur le port ${port} !!!!!!!!!`);
     });

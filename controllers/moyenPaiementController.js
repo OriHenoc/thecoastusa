@@ -141,7 +141,7 @@ exports.uploadLogo = async (req, res) => {
          form.append('file', fs.createReadStream(localFilePath));
  
          // Envoyer le fichier à l'API HTTP distante
-         const apiEndpoint = 'https://thecoastusa.com/api/uploadlogo.php';
+         const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadlogo.php';
          const response = await axios.post(apiEndpoint, form, {
              headers: {
                  ...form.getHeaders() // Inclut les en-têtes nécessaires pour FormData
