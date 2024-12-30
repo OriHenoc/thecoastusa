@@ -152,7 +152,7 @@ exports.soumettrePaiement = async (req, res) => {
         if (fichierPath) {
             const form = new FormData();
             form.append('file', fs.createReadStream(fichierPath));
-            const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadlogo.php';
+            const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadPreuvePaiement.php';
 
             const response = await axios.post(apiEndpoint, form, {
                 headers: {
