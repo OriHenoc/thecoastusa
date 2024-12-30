@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 require('dotenv').config();
+const axios = require('axios');
+const FormData = require('form-data');
 
 // Fonction pour générer un mot de passe aléatoire
 function generateRandomPassword(length = 8) {
