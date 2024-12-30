@@ -47,7 +47,6 @@ const UtilisateurSchema = new Schema({
     },
     photoDeProfil: {
         type: String,
-        required: false
     },
     dateInscription: {
         type: Date,

@@ -2,8 +2,6 @@ const express = require('express');
 const authMiddleware = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/uploadPhoto');
 const {
-    // createPaiement,
-    // uploadPreuve,
     soumettrePaiement,
     getAllPaiement,
     getAllConfirmedPaiement,
@@ -12,8 +10,6 @@ const {
 } = require('../controllers/paiementController');
 
 const router = express.Router();
-// router.post('/', createPaiement);
-// router.post('/uploadPreuve/:id', upload.single('preuve'), uploadPreuve);
 router.post('/soumission', upload.single('preuve'), soumettrePaiement);
 router.get('/', getAllPaiement);
 router.get('/confirmes', getAllConfirmedPaiement);

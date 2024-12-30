@@ -252,8 +252,8 @@ exports.uploadPhotoProfil = async (req, res) => {
         }
         
         // Supprimer l'ancienne photo si elle existe
-        if (utilisateur.photo) {
-            const oldPhotoPath = path.resolve(__dirname, '..', 'uploads/images/profils', path.basename(utilisateur.photo));
+        if (utilisateur.photoDeProfil) {
+            const oldPhotoPath = path.resolve(__dirname, '..', 'uploads/images/profils', path.basename(utilisateur.photoDeProfil));
             
             try {
                 const fileExists = await fs.pathExists(oldPhotoPath);
@@ -271,7 +271,7 @@ exports.uploadPhotoProfil = async (req, res) => {
         }
 
         // Mettre à jour la photo de profil
-        utilisateur.photo = `/uploads/images/profils/${req.file.filename}`;
+        utilisateur.photoDeProfil = `/uploads/images/profils/${req.file.filename}`;
         await utilisateur.save();
 
         res.status(200).json({
