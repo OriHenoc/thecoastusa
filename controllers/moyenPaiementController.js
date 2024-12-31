@@ -156,6 +156,29 @@ exports.uploadLogo = async (req, res) => {
         console.log('Fichier transféré avec succès :', response.data);
 
 
+        // Supprimer l'ancien logo s'il existe
+        if (moyen.logo) {
+            const oldPhotoPath = path.resolve(
+                __dirname, 
+                '..', // Revenir au niveau supérieur si nécessaire
+                moyen.logo.substring(1) // Supprime le premier '/' pour éviter des conflits
+            );
+
+            try {
+                const fileExists = await fs.pathExists(oldPhotoPath);
+                if (fileExists) {
+                    await fs.remove(oldPhotoPath);
+                    console.log('Ancien logo supprimé avec succès');
+                } else {
+                    console.log('Ancien logo non trouvé');
+                }
+            } catch (err) {
+                console.error("Erreur lors de la suppression de l'ancien logo :", err);
+            }
+        } else {
+            console.log('Aucun ancien logo à supprimer');
+        }
+
         // Mettre à jour le logo
         moyen.logo = `/uploads/images/moyens/${req.file.filename}`;
         await moyen.save();
