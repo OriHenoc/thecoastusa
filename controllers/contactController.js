@@ -45,11 +45,13 @@ exports.contacter = async (req, res) => {
             to: cible,
             subject: sujet || "Demande de contact",
             html: `
-                <h2>Hello,</h2>
+                <h2>Hello cher administrateur,</h2>
                 <p>Vous avez reçu un message de : <strong>${nomComplet}</strong></p>
                 <p><strong>Sujet :</strong> ${sujet || "Non spécifié"}</p>
                 <p><strong>Message :</strong> ${message}</p>
                 <p><strong>Joignable au :</strong> ${telephone}</p>
+                <hr/>
+                <p>Signé : Votre IA adorée</p>
             `
         });
 
