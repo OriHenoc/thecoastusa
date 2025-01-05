@@ -81,7 +81,6 @@ const UtilisateurSchema = new Schema({
     //Pour les familles
     nombreEnfants: {
         type: Number,
-        required: [true, 'Le nombre d\'enfants est requis']
     },
     etatID: {
         type: Schema.Types.ObjectId,
