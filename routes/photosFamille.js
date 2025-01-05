@@ -5,7 +5,7 @@ const {
     getAllPhotosFamille,
     getAllVisibledPhotosFamille,
     getPhotosFamilleById,
-    getPhotosFamilleByFamilleId,
+    getPhotosFamilleByUtilisateurID,
     deletePhotosFamille,
     togglePhotosFamilleStatus
 } = require('../controllers/photosFamilleController');
@@ -16,7 +16,7 @@ router.post('/', authMiddleware, createPhotosFamille);
 router.get('/', getAllPhotosFamille);
 router.get('/visibles', getAllVisibledPhotosFamille);
 router.get('/:id', getPhotosFamilleById);
-router.get('/famille/:id', getPhotosFamilleByFamilleId);
+router.get('/famille/:id', getPhotosFamilleByUtilisateurID);
 router.delete('/:id', authMiddleware, deletePhotosFamille);
 router.patch('/:id/toggleStatus', authMiddleware, togglePhotosFamilleStatus);
 

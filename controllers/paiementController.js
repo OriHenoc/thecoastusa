@@ -96,6 +96,9 @@ exports.confirmPaiementStatus = async (req, res) => {
 
         const utilisateur = await Utilisateur.findById(paiement.utilisateurID);
 
+        utilisateur.compteActif = true
+        await utilisateur.save();
+
         await transporter.sendMail({
             from: "admin@thecoastusa.com",
             to: utilisateur.email,

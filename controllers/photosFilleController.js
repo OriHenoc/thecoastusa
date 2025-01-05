@@ -9,10 +9,10 @@ exports.createPhotosFille = async (req, res) => {
 
         let fille = new PhotosFille();
         fille.photoFille = req.files['photoFille'][0].filename
-        fille.filleID = req.body.filleID
+        fille.utilisateurID = req.body.utilisateurID
         const newFille = await fille.save()
         res.status(201).json({
-            message : `La fille a été enregistrée !`,
+            message : `La photo de la fille a été enregistrée !`,
             fille : newFille
         });
     } catch (error) {
@@ -25,7 +25,7 @@ exports.createPhotosFille = async (req, res) => {
 
 exports.getAllPhotosFille = async (req, res) => {
     try {
-        const photosFille = await PhotosFille.find().populate('filleID');
+        const photosFille = await PhotosFille.find().populate('utilisateurID');
         const total = await PhotosFille.countDocuments();
         const visibles = await PhotosFille.countDocuments({ visible: true });
         res.status(200).json({
@@ -43,7 +43,7 @@ exports.getAllPhotosFille = async (req, res) => {
 
 exports.getAllVisibledPhotosFille = async (req, res) => {
     try {
-        const photosFille = await PhotosFille.find({ visible: true }).populate('filleID');
+        const photosFille = await PhotosFille.find({ visible: true }).populate('utilisateurID');
         res.status(200).json({
             photosFille : photosFille
         });
@@ -57,7 +57,7 @@ exports.getAllVisibledPhotosFille = async (req, res) => {
 
 exports.getPhotosFilleById = async (req, res) => {
     try {
-        const photosFille = await PhotosFille.findById(req.params.id).populate('filleID');
+        const photosFille = await PhotosFille.findById(req.params.id).populate('utilisateurID');
         if (!photosFille) return res.status(404).json('Photo de Fille non trouvée !');
         res.status(200).json({
             photosFille : photosFille
@@ -70,9 +70,9 @@ exports.getPhotosFilleById = async (req, res) => {
     }
 };
 
-exports.getPhotosFilleByFilleId = async (req, res) => {
+exports.getPhotosFilleByUtilisateurID = async (req, res) => {
     try {
-        const photosFille = await PhotosFille.find({filleID : req.params.id}).populate('filleID');
+        const photosFille = await PhotosFille.find({utilisateurID : req.params.id}).populate('utilisateurID');
         if (!photosFille) return res.status(404).json('Photo de Fille non trouvée !');
         res.status(200).json({
             photosFille : photosFille

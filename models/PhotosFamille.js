@@ -10,9 +10,9 @@ const PhotosFamilleSchema = new Schema({
         type: Boolean,
         default: true
     },
-    familleID: {
+    utilisateurID: {
         type: Schema.Types.ObjectId,
-        ref: 'Famille',
+        ref: 'Utilisateur',
         required: [true, 'La famille associée est requise'],
     }
 }, {

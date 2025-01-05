@@ -6,6 +6,7 @@ const {
     getAllPhotosFille,
     getAllVisibledPhotosFille,
     getPhotosFilleById,
+    getPhotosFilleByUtilisateurID,
     deletePhotosFille,
     togglePhotosFilleStatus
 } = require('../controllers/photosFilleController');
@@ -16,6 +17,7 @@ router.post('/', authMiddleware, createPhotosFille);
 router.get('/', getAllPhotosFille);
 router.get('/visibles', getAllVisibledPhotosFille);
 router.get('/:id', getPhotosFilleById);
+router.get('/fille/:id', getPhotosFilleByUtilisateurID);
 router.delete('/:id', authMiddleware, deletePhotosFille);
 router.patch('/:id/toggleStatus', authMiddleware, togglePhotosFilleStatus);
 

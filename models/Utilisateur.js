@@ -55,7 +55,42 @@ const UtilisateurSchema = new Schema({
     compteActif: {
         type: Boolean,
         default: false
-    }
+    },
+    visible: {
+        type: Boolean,
+        default: true
+    },
+    //Pour les filles
+    biographie: {
+        type: String
+    },
+    experience: {
+        type: String
+    },
+    langues: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Langue',
+    }],
+    videoDePresentation: {
+        type: String
+    },
+    photosFille: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'photosFille',
+    }],
+    //Pour les familles
+    nombreEnfants: {
+        type: Number,
+        required: [true, 'Le nombre d\'enfants est requis']
+    },
+    etatID: {
+        type: Schema.Types.ObjectId,
+        ref: 'Etat',
+    },
+    photosFamille: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PhotosFamille',
+    }],
 }, {
     timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }
 });
