@@ -11,6 +11,11 @@ const contactRoute = require('./contact');
 const moyenPaiementRoute = require('./moyenPaiement');
 const paiementRoute = require('./paiement');
 const utilisateurRoute = require('./utilisateur');
+const questionnaireFilleRoute = require('./questionnaireFille');
+const questionnaireFamilleRoute = require('./questionnaireFamille');
+const questionnaireRoute = require('./questionnaire');
+const questionRoute = require('./question');
+const reponseRoute = require('./reponse');
 
 router.use('/auth', authRoute);
 router.use('/pays', paysRoute);
@@ -22,5 +27,10 @@ router.use('/contact', contactRoute);
 router.use('/moyenPaiement', moyenPaiementRoute);
 router.use('/paiement', paiementRoute);
 router.use('/utilisateur', utilisateurRoute);
+router.use('/questionnaireFille', questionnaireFilleRoute);
+router.use('/questionnaireFamille', questionnaireFamilleRoute);
+router.use('/questionnaire', questionnaireRoute);
+router.use('/question', questionRoute);
+router.use('/reponse', reponseRoute);
 
 module.exports = router;
