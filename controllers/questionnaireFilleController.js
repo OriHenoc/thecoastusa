@@ -1,5 +1,6 @@
 const QuestionnaireFille = require('../models/QuestionnaireFille');
 const Questionnaire = require('../models/Questionnaire');
+const Reponse = require('../models/Reponse');
 
 exports.getQuestionnaire = async (req, res) => {
     try {
@@ -20,6 +21,13 @@ exports.getQuestionnaire = async (req, res) => {
             await progression.save();
         }
 
+        if(progression.etat == 'en_attente'){
+            return res.status(400).json({
+                message: 'Vous avez soumis des réponses à un questionnaire qui est en attente de validation. Veuillez patienter !',
+                questionsManquantes: manquees,
+            });
+        }
+
         // Récupérer le premier questionnaire ou celui correspondant à questionnaireActuel
 
         const questionnaire = await Questionnaire.findOne({
@@ -31,6 +39,19 @@ exports.getQuestionnaire = async (req, res) => {
             return res.status(404).json({ message: 'Aucun questionnaire trouvé.' });
         }
 
+        // Vérifie si une réponse est déjà en attente de validation pour ce questionnaire
+        const reponseExistante = await Reponse.findOne({
+            utilisateurID: req.params.id,
+            questionnaireID: questionnaire._id,
+            statut: 'en_attente',
+        });
+
+        if (reponseExistante) {
+            return res.status(400).json({
+                message: 'Vous avez déjà soumis vos réponses pour ce questionnaire. Veuillez attendre la validation.',
+            });
+        }
+        
         // Retourner les questions
 
         res.status(200).json({

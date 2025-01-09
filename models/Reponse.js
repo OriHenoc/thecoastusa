@@ -25,6 +25,11 @@ const ReponseSchema = new Schema({
         },
       },
     ],
+    statut: { 
+      type: String, 
+      enum: ['en_attente', 'valide'], 
+      default: 'en_attente' 
+    },
 }, {
     timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }
 });

@@ -9,6 +9,6 @@ const router = express.Router();
 
 
 router.post('/', submitReponses);
-router.post('/:id', getReponsesByUtilisateur);
+router.get('/:id', getReponsesByUtilisateur);
 
 module.exports = router;

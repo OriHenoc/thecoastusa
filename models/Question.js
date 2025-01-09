@@ -8,7 +8,7 @@ const QuestionSchema = new Schema({
     },
     type: {
         type: String,
-        enum: ['texte', 'choix_simple', 'choix_multiple', 'date', 'nombre', 'oui_non'],
+        enum: ['texte', 'commentaire', 'tel', 'email', 'choix_simple', 'choix_multiple', 'selection', 'date', 'nombre', 'oui_non'],
         required: true,
     },
     options: [{

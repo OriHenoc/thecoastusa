@@ -17,7 +17,7 @@ const QuestionnaireFilleSchema = new Schema({
   },
   etat: {
     type: String,
-    enum: ['en_cours', 'complet'], // Suivi de progression
+    enum: ['en_cours', 'en_attente', 'complet'], // Suivi de progression
     default: 'en_cours',
   },
   historiqueValidations: [
