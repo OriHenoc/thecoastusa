@@ -128,6 +128,36 @@ exports.submitReponses = async (req, res) => {
   }
 };
 
+exports.getAllReponses = async (req, res) => {
+  try {
+
+    // Recherche des réponses par utilisateurID et population des champs nécessaires
+    const reponses = await Reponse.find()
+      .populate({
+        path: 'reponses.questionID', // Chemin de population pour les questions
+        select: 'intitule type obligatoire', // Champs spécifiques à inclure
+      })
+      .populate('utilisateurID')
+      .populate('questionnaireID', 'titre description'); // Inclure les détails des questionnaires
+
+    if (reponses.length === 0) {
+      return res.status(404).json({ message: 'Aucune réponse trouvée.' });
+    }
+
+    res.status(200).json({
+      message: 'Réponses récupérées avec succès.',
+      reponses: reponses,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Une erreur est survenue lors de la récupération des réponses.',
+      erreur: error.message,
+    });
+  }
+};
+
+
 exports.getReponsesByUtilisateur = async (req, res) => {
   try {
 
@@ -185,7 +215,7 @@ exports.getReponsesByQuestionnaire = async (req, res) => {
 
     res.status(200).json({
       message: 'Réponses récupérées avec succès.',
-      reponses,
+      reponses: reponses,
     });
   } catch (error) {
     console.error(error);
