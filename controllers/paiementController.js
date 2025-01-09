@@ -22,8 +22,8 @@ const transporter = nodemailer.createTransport({
 
 exports.createPaiement = async (req, res) => {
     try {
-        const { moyenID, montant, utilisateurID } = req.body;
-        const newPaiement = new Paiement({ moyenID, montant, utilisateurID });
+        const { moyenID, montant, utilisateurID, commentaire } = req.body;
+        const newPaiement = new Paiement({ moyenID, montant, utilisateurID, commentaire });
         await newPaiement.save();
         res.status(201).json({
             message : `Le paiement a été enregistré !`,

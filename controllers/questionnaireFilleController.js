@@ -68,7 +68,7 @@ exports.getQuestionnaire = async (req, res) => {
 
 exports.getAllQuestionnaireFille = async (req, res) => {
     try {
-        const questionnaires = await QuestionnaireFille.find();
+        const questionnaires = await QuestionnaireFille.find().populate('filleID').populate('historiqueValidations.questionnaireID');
         const total = await QuestionnaireFille.countDocuments();
         res.status(200).json({
             total : total,
