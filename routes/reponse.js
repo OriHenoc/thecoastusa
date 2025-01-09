@@ -10,7 +10,7 @@ const router = express.Router();
 
 
 router.post('/', submitReponses);
-router.get('byUtilisateur/:id', getReponsesByUtilisateur);
-router.get('byQuestionnaire/:id', getReponsesByQuestionnaire);
+router.get('/byUtilisateur/:id', getReponsesByUtilisateur);
+router.get('/byQuestionnaire/:id', getReponsesByQuestionnaire);
 
 module.exports = router;
