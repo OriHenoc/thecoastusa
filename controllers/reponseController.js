@@ -186,9 +186,55 @@ exports.getReponsesByUtilisateur = async (req, res) => {
   }
 };
 
+// exports.getReponsesByQuestionnaire = async (req, res) => {
+//   try {
+//     // Récupérer la progression (utilisateur actuel et questionnaire en cours)
+//     const progression = await QuestionnaireFille.findById(req.params.id);
+
+//     if (!progression) {
+//       return res.status(404).json({ message: 'Progression non trouvée.' });
+//     }
+
+//     // Récupérer le questionnaire en cours (en fonction du 'ordre' de progression)
+//     const questionnaire = await Questionnaire.findOne({
+//       categorie: 'fille',
+//       ordre: progression.questionnaireActuel,
+//     }).populate('questions');
+
+//     if (!questionnaire) {
+//       return res.status(404).json({ message: 'Aucun questionnaire trouvé.' });
+//     }
+
+//     // Recherche des réponses de tous les utilisateurs pour ce questionnaire spécifique
+//     const reponses = await Reponse.find({ questionnaireID: questionnaire._id })
+//       .populate({
+//         path: 'reponses.questionID', // Population des questions
+//         select: 'intitule type obligatoire', // Champs spécifiques des questions
+//       })
+//       .populate('utilisateurID') // Population des utilisateurs ayant répondu
+//       .populate('questionnaireID', 'ordre titre'); // Population des détails du questionnaire
+
+//     if (reponses.length === 0) {
+//       return res.status(404).json({ message: 'Aucune réponse trouvée pour ce questionnaire.' });
+//     }
+
+//     // Renvoi des réponses récupérées
+//     res.status(200).json({
+//       message: 'Réponses récupérées avec succès.',
+//       reponses: reponses,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       message: 'Une erreur est survenue lors de la récupération des réponses.',
+//       erreur: error.message,
+//     });
+//   }
+// };
+
 exports.getReponsesByQuestionnaire = async (req, res) => {
   try {
-    // Récupérer la progression (utilisateur actuel et questionnaire en cours)
+    // Récupérer le questionnaire actuel
     const progression = await QuestionnaireFille.findById(req.params.id);
 
     if (!progression) {
@@ -218,10 +264,13 @@ exports.getReponsesByQuestionnaire = async (req, res) => {
       return res.status(404).json({ message: 'Aucune réponse trouvée pour ce questionnaire.' });
     }
 
-    // Renvoi des réponses récupérées
+    // Regroupement des réponses par filleID
+    const reponsesGroupedByFille = groupReponsesByFille(reponses);
+
+    // Renvoi des réponses regroupées par filleID
     res.status(200).json({
       message: 'Réponses récupérées avec succès.',
-      reponses: reponses,
+      reponses: reponsesGroupedByFille,
     });
   } catch (error) {
     console.error(error);
@@ -231,6 +280,28 @@ exports.getReponsesByQuestionnaire = async (req, res) => {
     });
   }
 };
+
+// Fonction de regroupement des réponses par filleID
+function groupReponsesByFille(reponses) {
+  const grouped = [];
+
+  reponses.forEach(reponse => {
+    const filleGroup = grouped.find(group => group.filleID._id.toString() === reponse.utilisateurID._id.toString());
+
+    if (filleGroup) {
+      // Ajouter la réponse au groupe existant
+      filleGroup.reponses.push(reponse);
+    } else {
+      // Créer un nouveau groupe pour cette fille
+      grouped.push({
+        filleID: reponse.utilisateurID,
+        reponses: [reponse]
+      });
+    }
+  });
+
+  return grouped;
+}
 
 
 exports.validerReponses = async (req, res) => {
