@@ -88,7 +88,7 @@ exports.submitReponses = async (req, res) => {
 
       //Mail aux admins
 
-      adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "paiement@thecoastusa.com"]
+      adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "dossier@thecoastusa.com"]
 
       await transporter.sendMail({
           from: "admin@thecoastusa.com",
