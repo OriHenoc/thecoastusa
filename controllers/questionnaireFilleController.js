@@ -65,3 +65,19 @@ exports.getQuestionnaire = async (req, res) => {
         res.status(500).json({ message: 'Erreur lors de la récupération du questionnaire.' });
     }
 };
+
+exports.getAllQuestionnaireFille = async (req, res) => {
+    try {
+        const questionnaires = await QuestionnaireFille.find();
+        const total = await QuestionnaireFille.countDocuments();
+        res.status(200).json({
+            total : total,
+            questionnaires : questionnaires.reverse()
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Une erreur est survenue !',
+            erreur : error.message
+        });
+    }
+};
