@@ -1,6 +1,22 @@
 const Reponse = require('../models/Reponse');
 const Questionnaire = require('../models/Questionnaire');
 const QuestionnaireFille = require('../models/QuestionnaireFille');
+const Utilisateur = require('../models/Utilisateur')
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+
+const transporter = nodemailer.createTransport({
+    host: 'mail.thecoastusa.com',
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
 
 exports.submitReponses = async (req, res) => {
   try {
@@ -53,6 +69,39 @@ exports.submitReponses = async (req, res) => {
     progression.etat = 'en_attente';
 
     await progression.save();
+
+    // ENVOYER LES MAILS
+
+      //Mail à la fille
+
+      const utilisateur = await Utilisateur.findById(utilisateurID);
+
+      await transporter.sendMail({
+          from: "admin@thecoastusa.com",
+          to: utilisateur.email,
+          subject: "Questionnaire soumis",
+          html: `
+              <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+              <p>Vous avez soumis les réponses à un questionnaire et nous les avons bien reçues !</p>
+              <p>Vous recevrez une confirmation après validation.</p>`
+      });
+
+      //Mail aux admins
+
+      adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "paiement@thecoastusa.com"]
+
+      await transporter.sendMail({
+          from: "admin@thecoastusa.com",
+          to: adminEmails.join(","),
+          subject: "Questionnaire soumis et en attente de validation",
+          html: `
+              <h2>Hello cher administrateur,</h2>
+              <p>${utilisateur.nom} ${utilisateur.prenoms} (${utilisateur.role}) a soumis des réponses à un questionnaire.</p>
+              <p>Veuillez vous connecter à votre espace de gestion pour valider et refuser les réponses reçues.</p>
+              <hr/>
+              <p>Signé : Votre IA adorée</p>
+          `
+      });
 
     res.status(201).json({
       message: 'Réponses soumises avec succès, en attente de validation.',
@@ -132,6 +181,20 @@ exports.validerReponses = async (req, res) => {
 
     await progression.save();
 
+    //Mail à la fille
+
+    const utilisateur = await Utilisateur.findById(reponse.utilisateurID);
+
+    await transporter.sendMail({
+        from: "admin@thecoastusa.com",
+        to: utilisateur.email,
+        subject: "Questionnaire validé",
+        html: `
+            <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+            <p>L'administration a validé vos réponses au questionnaire soumis précédemment !</p>
+            <p>Vous pouvez vous connecter pour poursuivre la composition de votre dossier.</p>`
+    });
+
     res.status(200).json({ message: 'Réponse validée avec succès.' });
   } catch (error) {
     console.error(error);
@@ -159,7 +222,21 @@ exports.refuserReponses = async (req, res) => {
 
     await progression.save();
 
-    res.status(200).json({ message: 'Réponse refusée, veuillez reprendre.' });
+    //Mail à la fille
+
+    const utilisateur = await Utilisateur.findById(reponse.utilisateurID);
+
+    await transporter.sendMail({
+        from: "admin@thecoastusa.com",
+        to: utilisateur.email,
+        subject: "Questionnaire à reprendre",
+        html: `
+            <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+            <p>L'administration n'a pas validé vos réponses au questionnaire soumis précédemment !</p>
+            <p>Vous devez vous connecter pour reprendre le questionnaire en soumettant des réponses satisfaisantes.</p>`
+    });
+
+    res.status(200).json({ message: 'Réponse refusée, le questionnaire sera repris.' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erreur lors du refus des réponses.' });
