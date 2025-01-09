@@ -2,13 +2,15 @@ const express = require('express');
 const authMiddleware = require('../middlewares/authMiddleware');
 const {
     submitReponses,
-    getReponsesByUtilisateur
+    getReponsesByUtilisateur,
+    getReponsesByQuestionnaire
 } = require('../controllers/reponseController');
 
 const router = express.Router();
 
 
 router.post('/', submitReponses);
-router.get('/:id', getReponsesByUtilisateur);
+router.get('byUtilisateur/:id', getReponsesByUtilisateur);
+router.get('byQuestionnaire/:id', getReponsesByQuestionnaire);
 
 module.exports = router;

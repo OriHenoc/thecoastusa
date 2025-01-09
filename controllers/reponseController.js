@@ -156,6 +156,35 @@ exports.getReponsesByUtilisateur = async (req, res) => {
   }
 };
 
+exports.getReponsesByQuestionnaire = async (req, res) => {
+  try {
+
+    // Recherche des réponses par questionnaireID et population des champs nécessaires
+    const reponses = await Reponse.find({ questionnaireID : req.params.id })
+      .populate({
+        path: 'reponses.questionID', // Chemin de population pour les questions
+        select: 'intitule type obligatoire', // Champs spécifiques à inclure
+      })
+      .populate('utilisateurID')
+      .populate('questionnaireID', 'ordre titre'); // Inclure les détails des questionnaires
+
+    if (reponses.length === 0) {
+      return res.status(404).json({ message: 'Aucune réponse trouvée pour cet utilisateur.' });
+    }
+
+    res.status(200).json({
+      message: 'Réponses récupérées avec succès.',
+      reponses,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Une erreur est survenue lors de la récupération des réponses.',
+      erreur: error.message,
+    });
+  }
+};
+
 
 exports.validerReponses = async (req, res) => {
   try {
