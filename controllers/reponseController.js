@@ -171,32 +171,63 @@ exports.validerReponses = async (req, res) => {
     reponse.statut = 'valide';
     await reponse.save();
 
-    const progression = await QuestionnaireFille.findOne({ filleID: reponse.utilisateurID });
-
-    if (!progression) {
-      return res.status(404).json({ message: 'Progression non trouvée.' });
-    }
-
-    // Valider le questionnaire actuel
-    if (progression.questionnaireActuel <= progression.nbreValides) {
-      return res.status(400).json({ message: 'Ce questionnaire a déjà été validé.' });
-    }
-    
-    // Incrémenter le compteur et mettre à jour l'état
-    progression.nbreValides += 1;
-    if (progression.nbreValides < 3) {
-      progression.questionnaireActuel += 1;
-      progression.etat = 'en_cours';
-    } else {
-      progression.etat = 'complet';
-    }
-
-    await progression.save();
-
-    //Mail à la fille
-
     const utilisateur = await Utilisateur.findById(reponse.utilisateurID);
 
+    if(utilisateur.role == 'fille'){
+      const progression = await QuestionnaireFille.findOne({ filleID: reponse.utilisateurID });
+
+      if (!progression) {
+        return res.status(404).json({ message: 'Progression non trouvée.' });
+      }
+
+      // Valider le questionnaire actuel
+      if (progression.questionnaireActuel <= progression.nbreValides) {
+        return res.status(400).json({ message: 'Ce questionnaire a déjà été validé.' });
+      }
+      
+      // Incrémenter le compteur et mettre à jour l'état
+      progression.nbreValides += 1;
+      if (progression.nbreValides < 3) {
+        progression.questionnaireActuel += 1;
+        progression.etat = 'en_cours';
+      } else {
+        progression.etat = 'complet';
+      }
+
+      // garder les traces
+      progression.historiqueValidations.push({
+        questionnaireID: reponse.questionnaireID,
+        dateValidation: new Date(),
+      });
+
+      await progression.save();
+    }
+
+    if(utilisateur.role == 'famille'){
+      const progression = await QuestionnaireFamille.findOne({ familleID: reponse.utilisateurID });
+
+      if (!progression) {
+        return res.status(404).json({ message: 'Progression non trouvée.' });
+      }
+
+      // Valider le questionnaire actuel
+      if (progression.questionnaireActuel <= progression.nbreValides) {
+        return res.status(400).json({ message: 'Ce questionnaire a déjà été validé.' });
+      }
+      
+      // Incrémenter le compteur et mettre à jour l'état
+      progression.nbreValides += 1;
+      if (progression.nbreValides < 3) {
+        progression.questionnaireActuel += 1;
+        progression.etat = 'en_cours';
+      } else {
+        progression.etat = 'complet';
+      }
+
+      await progression.save();
+    }
+
+    //Mail
     await transporter.sendMail({
         from: "admin@thecoastusa.com",
         to: utilisateur.email,
@@ -224,19 +255,35 @@ exports.refuserReponses = async (req, res) => {
       return res.status(404).json({ message: 'Réponse non trouvée.' });
     }
 
-    const progression = await QuestionnaireFille.findOne({ filleID: reponse.utilisateurID });
+    
+    const utilisateur = await Utilisateur.findById(reponse.utilisateurID);
 
-    if (!progression) {
-      return res.status(404).json({ message: 'Progression non trouvée.' });
+    if(utilisateur.role == 'fille'){
+      const progression = await QuestionnaireFille.findOne({ filleID: reponse.utilisateurID });
+
+      if (!progression) {
+        return res.status(404).json({ message: 'Progression non trouvée.' });
+      }
+
+      progression.etat = 'en_cours';
+
+      await progression.save();
     }
 
-    progression.etat = 'en_cours';
+    if(utilisateur.role == 'famille'){
+      const progression = await QuestionnaireFamille.findOne({ familleID: reponse.utilisateurID });
 
-    await progression.save();
+      if (!progression) {
+        return res.status(404).json({ message: 'Progression non trouvée.' });
+      }
 
-    //Mail à la fille
+      progression.etat = 'en_cours';
 
-    const utilisateur = await Utilisateur.findById(reponse.utilisateurID);
+      await progression.save();
+    }
+
+    //Mail
+
 
     await transporter.sendMail({
         from: "admin@thecoastusa.com",

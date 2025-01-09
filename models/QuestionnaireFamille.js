@@ -17,7 +17,7 @@ const QuestionnaireFamilleSchema = new Schema({
   },
   etat: {
     type: String,
-    enum: ['en_cours', 'complet'],
+    enum: ['en_cours', 'en_attente', 'complet'],
     default: 'en_cours',
   }
 }, {
