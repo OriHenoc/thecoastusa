@@ -24,6 +24,7 @@ exports.getQuestionnaire = async (req, res) => {
         if(progression.etat == 'en_attente'){
             return res.status(400).json({
                 message: 'Vous avez soumis des réponses à un questionnaire qui est en attente de validation. Veuillez patienter !',
+                valides: progression.nbreValides
             });
         }
 
