@@ -159,8 +159,19 @@ exports.getReponsesByUtilisateur = async (req, res) => {
 exports.getReponsesByQuestionnaire = async (req, res) => {
   try {
 
+    const progression = await QuestionnaireFille.findById(req.params.id);
+
+    const questionnaire = await Questionnaire.findOne({
+      categorie: 'fille',
+      ordre: progression.questionnaireActuel
+      }).populate('questions');
+
+      if (!questionnaire) {
+          return res.status(404).json({ message: 'Aucun questionnaire trouvé.' });
+      }
+      
     // Recherche des réponses par questionnaireID et population des champs nécessaires
-    const reponses = await Reponse.find({ questionnaireID : req.params.id })
+    const reponses = await Reponse.find({ utilisateurID: progression.filleID, questionnaireID : questionnaire.id })
       .populate({
         path: 'reponses.questionID', // Chemin de population pour les questions
         select: 'intitule type obligatoire', // Champs spécifiques à inclure
@@ -169,7 +180,7 @@ exports.getReponsesByQuestionnaire = async (req, res) => {
       .populate('questionnaireID', 'ordre titre'); // Inclure les détails des questionnaires
 
     if (reponses.length === 0) {
-      return res.status(404).json({ message: 'Aucune réponse trouvée pour cet utilisateur.' });
+      return res.status(404).json({ message: 'Aucune réponse trouvée pour ce questionnaire.' });
     }
 
     res.status(200).json({
