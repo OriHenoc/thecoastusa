@@ -1,6 +1,7 @@
 const Reponse = require('../models/Reponse');
 const Questionnaire = require('../models/Questionnaire');
 const QuestionnaireFille = require('../models/QuestionnaireFille');
+const QuestionnaireFamille = require('../models/QuestionnaireFamille');
 const Utilisateur = require('../models/Utilisateur')
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -64,17 +65,28 @@ exports.submitReponses = async (req, res) => {
 
     await nouvelleReponse.save();
     
-    // Mettre la progression en attente afin de faire patienter pendant la validation de la reponse
-    const progression = await QuestionnaireFille.findOne({ filleID: utilisateurID });
-    progression.etat = 'en_attente';
+    
+    const utilisateur = await Utilisateur.findById(utilisateurID);
 
-    await progression.save();
+    if(utilisateur.role == 'fille'){
+      // Mettre la progression en attente afin de faire patienter pendant la validation de la reponse
+      const progression = await QuestionnaireFille.findOne({ filleID: utilisateurID });
+      progression.etat = 'en_attente';
+
+      await progression.save();
+    }
+
+    if(utilisateur.role == 'famille'){
+      // Mettre la progression en attente afin de faire patienter pendant la validation de la reponse
+      const progression = await QuestionnaireFamille.findOne({ familleID: utilisateurID });
+      progression.etat = 'en_attente';
+
+      await progression.save();
+    }
 
     // ENVOYER LES MAILS
 
-      //Mail à la fille
-
-      const utilisateur = await Utilisateur.findById(utilisateurID);
+      //Mail
 
       await transporter.sendMail({
           from: "admin@thecoastusa.com",
@@ -97,7 +109,7 @@ exports.submitReponses = async (req, res) => {
           html: `
               <h2>Hello cher administrateur,</h2>
               <p>${utilisateur.nom} ${utilisateur.prenoms} (${utilisateur.role}) a soumis des réponses à un questionnaire.</p>
-              <p>Veuillez vous connecter à votre espace de gestion pour valider et refuser les réponses reçues.</p>
+              <p>Veuillez vous connecter à votre espace de gestion pour valider ou refuser les réponses reçues.</p>
               <hr/>
               <p>Signé : Votre IA adorée</p>
           `
