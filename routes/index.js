@@ -16,6 +16,7 @@ const questionnaireFamilleRoute = require('./questionnaireFamille');
 const questionnaireRoute = require('./questionnaire');
 const questionRoute = require('./question');
 const reponseRoute = require('./reponse');
+const documentsSoumisRoute = require('./documentsSoumis');
 
 router.use('/auth', authRoute);
 router.use('/pays', paysRoute);
@@ -32,5 +33,6 @@ router.use('/questionnaireFamille', questionnaireFamilleRoute);
 router.use('/questionnaire', questionnaireRoute);
 router.use('/question', questionRoute);
 router.use('/reponse', reponseRoute);
+router.use('/documentsSoumis', documentsSoumisRoute);
 
 module.exports = router;

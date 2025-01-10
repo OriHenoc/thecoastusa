@@ -21,7 +21,7 @@ function generateRandomPassword(length = 8) {
 
 // Configuration du transporteur avec le serveur SMTP
 const transporter = nodemailer.createTransport({
-    host: 'mail.committeam.com',
+    host: 'mail.thecoastusa.com',
     port: 587,
     secure: false,
     auth: {
@@ -32,7 +32,6 @@ const transporter = nodemailer.createTransport({
         rejectUnauthorized: false
     }
 });
-
 
 // Créer un utilisateur
 exports.createUtilisateur = async (req, res) => {

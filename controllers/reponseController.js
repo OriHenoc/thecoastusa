@@ -373,8 +373,23 @@ exports.validerReponses = async (req, res) => {
       await progression.save();
     }
 
-    //Mail
-    await transporter.sendMail({
+    if(progression.etat == 'complet'){
+
+      //Mail
+        await transporter.sendMail({
+          from: "admin@thecoastusa.com",
+          to: utilisateur.email,
+          subject: "Etape suivante",
+          html: `
+              <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+              <p>L'administration a validé vos réponses à tous les questionnaires soumis précédemment !</p>
+              <p>La prochaine étape consiste à fournir des documents</p>
+              <p>Vous pouvez vous connecter et vous rendre dans la partie "Documents" pour poursuivre la composition de votre dossier.</p>`
+      });
+    }
+    else{
+      //Mail
+      await transporter.sendMail({
         from: "admin@thecoastusa.com",
         to: utilisateur.email,
         subject: "Questionnaire validé",
@@ -383,6 +398,8 @@ exports.validerReponses = async (req, res) => {
             <p>L'administration a validé vos réponses au questionnaire soumis précédemment !</p>
             <p>Vous pouvez vous connecter pour poursuivre la composition de votre dossier.</p>`
     });
+    }
+    
 
     res.status(200).json({ message: 'Réponse validée avec succès.' });
   } catch (error) {
