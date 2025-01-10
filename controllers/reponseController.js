@@ -138,7 +138,7 @@ exports.getAllReponses = async (req, res) => {
         select: 'intitule type obligatoire', // Champs spécifiques à inclure
       })
       .populate('utilisateurID')
-      .populate('questionnaireID', 'titre description'); // Inclure les détails des questionnaires
+      .populate('questionnaireID'); // Inclure les détails des questionnaires
 
     if (reponses.length === 0) {
       return res.status(404).json({ message: 'Aucune réponse trouvée.' });
@@ -306,10 +306,9 @@ function groupReponsesByFille(reponses) {
 
 exports.validerReponses = async (req, res) => {
   try {
-    const { reponseID } = req.body;
 
     // Récupère la réponse
-    const reponse = await Reponse.findById(reponseID);
+    const reponse = await Reponse.findById(req.params.id);
     if (!reponse) {
       return res.status(404).json({ message: 'Réponse non trouvée.' });
     }
@@ -394,15 +393,13 @@ exports.validerReponses = async (req, res) => {
 
 exports.refuserReponses = async (req, res) => {
   try {
-    const { reponseID } = req.body;
 
     // Récupère la réponse et la supprime
-    const reponse = await Reponse.findByIdAndDelete(reponseID);
+    const reponse = await Reponse.findByIdAndDelete(req.params.id);
     if (!reponse) {
       return res.status(404).json({ message: 'Réponse non trouvée.' });
     }
 
-    
     const utilisateur = await Utilisateur.findById(reponse.utilisateurID);
 
     if(utilisateur.role == 'fille'){
