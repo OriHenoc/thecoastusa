@@ -16,7 +16,7 @@ router.post('/', submitReponses);
 router.get('/', getAllReponses);
 router.get('/byUtilisateur/:id', getReponsesByUtilisateur);
 router.get('/byQuestionnaire/:id', getReponsesByQuestionnaire);
-router.get('/valider/:id', validerReponses);
-router.get('/refuser/:id', refuserReponses);
+router.post('/valider/:id', validerReponses);
+router.post('/refuser/:id', refuserReponses);
 
 module.exports = router;
