@@ -326,10 +326,10 @@ exports.validerReponses = async (req, res) => {
         return res.status(404).json({ message: 'Progression non trouvée.' });
       }
 
-      // Valider le questionnaire actuel
-      if (progression.questionnaireActuel <= progression.nbreValides) {
-        return res.status(400).json({ message: 'Ce questionnaire a déjà été validé.' });
-      }
+      // // Valider le questionnaire actuel
+      // if (progression.questionnaireActuel <= progression.nbreValides) {
+      //   return res.status(400).json({ message: 'Ce questionnaire a déjà été validé.' });
+      // }
       
       // Incrémenter le compteur et mettre à jour l'état
       progression.nbreValides += 1;
