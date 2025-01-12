@@ -37,6 +37,27 @@ exports.getAllDocumentsSoumis = async (req, res) => {
     }
 };
 
+exports.getDocumentsSoumisByUtilisateur = async (req, res) => {
+    try {
+        const docs = await DocumentsSoumis.find({ utilisateurID : req.params.id }).populate('utilisateurID')
+  
+        if (!docs) {
+            return res.status(404).json({ message: 'Aucun document trouvé pour cet utilisateur.' });
+        }
+    
+        res.status(200).json({
+            message: 'Documents récupérées avec succès.',
+            documents: docs,
+        });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: 'Une erreur est survenue lors de la récupération des documents.',
+        erreur: error.message,
+      });
+    }
+  };
+
 exports.soumettreDocument = async (req, res) => {
     try {
         if (!req.file || !req.file.filename) {
