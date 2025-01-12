@@ -6,6 +6,7 @@ require('dotenv').config();
 const axios = require('axios');
 const FormData = require('form-data');
 const DocumentsSoumis = require('../models/DocumentsSoumis');
+const Contrat = require('../models/Contrat');
 
 // Configuration du transporteur avec le serveur SMTP
 const transporter = nodemailer.createTransport({
@@ -23,7 +24,7 @@ const transporter = nodemailer.createTransport({
 
 exports.getAllDocumentsSoumis = async (req, res) => {
     try {
-        const docs = await DocumentsSoumis.find();
+        const docs = await DocumentsSoumis.find().populate('utilisateurID');
         const total = await DocumentsSoumis.countDocuments();
         res.status(200).json({
             total : total,
@@ -56,7 +57,9 @@ exports.getDocumentsSoumisByUtilisateur = async (req, res) => {
         erreur: error.message,
       });
     }
-  };
+};
+
+
 
 exports.soumettreDocument = async (req, res) => {
     try {
@@ -155,6 +158,150 @@ exports.soumettreDocument = async (req, res) => {
         console.error(error);
         res.status(500).json({
             message: "Une erreur est survenue lors de l'envoi du document.",
+            erreur: error.message,
+        });
+    }
+};
+
+exports.annulerDocumentSoumis = async (req, res) => {
+    try {
+        const { docsID, documentAreprendre } = req.body;
+
+        // Vérifier si les champs requis sont fournis
+        if (!docsID || !documentAreprendre) {
+            return res.status(400).json({
+                message: 'docsID et documentAreprendre sont requis.',
+            });
+        }
+
+        // Vérifier si la propriété existe dans le modèle
+        const validFields = [
+            'reconTravail',
+            'dernierDiplome',
+            'certificatResidence',
+            'casierJudiciaire',
+            'bilanSante',
+            'pieceIdentite',
+        ];
+
+        if (!validFields.includes(documentAreprendre)) {
+            return res.status(400).json({
+                message: `Le champ '${documentAreprendre}' n'est pas valide.`,
+            });
+        }
+
+        // Trouver le document par ID
+        const docs = await DocumentsSoumis.findById(docsID);
+        if (!docs) {
+            return res.status(404).json({
+                message: 'Document soumis non trouvé.',
+            });
+        }
+
+        // Mettre à jour le champ cible
+        docs[documentAreprendre] = '';
+
+        if (documentAreprendre == 'pieceIdentite')
+        docs.typePieceIdentite = '';
+
+        await docs.save();
+
+        //Informer
+
+        let doc = "doc";
+
+        switch (documentAreprendre) {
+            case "reconTravail":
+                doc = "le document de reconnaissance de travail"
+                break;
+        
+            case "dernierDiplome":
+                doc = "la copie du dernier diplôme"
+                break;
+
+            case "certificatResidence":
+                doc = "le certificat de résidence"
+                break;
+
+            case "casierJudiciaire":
+                doc = "casier judiciaire"
+                break;
+
+            case "bilanSante":
+                doc = "Bilan de santé"
+                break;
+
+            case "pieceIdentite":
+                doc = "la copie de la pièce d'identité."
+                break;
+
+            default:
+                doc = "Document"
+                break;
+        }
+
+        const utilisateur = await Utilisateur.findById(docs.utilisateurID);
+
+            await transporter.sendMail({
+                from: "admin@thecoastusa.com",
+                to: utilisateur.email,
+                subject: "Document refusé",
+                html: `
+                    <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                    <p>Vous avez soumis un document qui a été refusé par l'administration !</p>
+                    <p>Vous devez donc vous reconnecter et ressoumettre ${doc}.</p>
+                `
+            });
+
+        return res.status(200).json({
+            message: 'Mise à jour effectuée avec succès !',
+            documents: docs,
+        });
+    } catch (error) {
+        console.error('Erreur pour annuler le document soumis:', error);
+        return res.status(500).json({
+            message: 'Une erreur interne est survenue.',
+            erreur: error.message,
+        });
+    }
+};
+
+exports.validerDocumentSoumis = async (req, res) => {
+    try {
+
+        const docs = await DocumentsSoumis.findById(req.params.id);
+        if (!docs) {
+            return res.status(404).json({
+                message: 'Document soumis non trouvé.',
+            });
+        }
+
+        // Créer un contrat
+        const contrat = new Contrat({ utilisateurID : docs.utilisateurID });
+
+        await contrat.save();
+
+        //Informer
+        const utilisateur = await Utilisateur.findById(docs.utilisateurID);
+
+            await transporter.sendMail({
+                from: "admin@thecoastusa.com",
+                to: utilisateur.email,
+                subject: "Contrat Disponible",
+                html: `
+                    <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                    <p>Votre contrat est désormais disponible !</p>
+                    <p>Vous pouvez vous connecter et aller à la rubrique "Contrat" pour procéder à la signature.</p>
+                `
+            });
+
+        return res.status(200).json({
+            message: 'Contrat proposé avec succès !'
+        });
+    } catch (error) {
+        console.error('Erreur pour valider les documents soumis:', error);
+        return res.status(500).json({
+            message: 'Une erreur interne est survenue.',
             erreur: error.message,
         });
     }

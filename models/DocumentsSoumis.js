@@ -33,7 +33,7 @@ const DocumentsSoumisSchema = new Schema({
     utilisateurID: {
         type: Schema.Types.ObjectId,
         ref: 'Utilisateur',
-        required: [true, 'La famille associée est requise'],
+        required: [true, 'L\'utilisateur associé est requis'],
     }
 }, {
     timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }
