@@ -140,12 +140,12 @@ exports.validerContrat = async (req, res) => {
 
 exports.soumettreContrat = async (req, res) => {
     try {
+        console.log('Req :', req);
         if (!req.file || !req.file.filename) {
             return res.status(400).json({ message: "Aucun fichier n'a été fourni." });
         }
 
         const fichierPath = path.resolve('uploads/contrats', req.file.filename);
-
         const { utilisateurID } = req.body;
 
         if (!utilisateurID) {
@@ -161,10 +161,11 @@ exports.soumettreContrat = async (req, res) => {
             headers: {
                 ...form.getHeaders(),
             },
+            timeout: 10000,  // Timeout de 10 secondes
         });
 
         console.log('Réponse de l\'API PHP :', response.data);
-        
+
         if (response.data.status !== 'success') {
             throw new Error(response.data.message || 'Erreur lors du téléchargement du fichier');
         }
@@ -175,35 +176,35 @@ exports.soumettreContrat = async (req, res) => {
         }
 
         let cont = await Contrat.findOne({ utilisateurID : utilisateurID });
-        
+
+        if (!cont) {
+            return res.status(404).json({ message: "Contrat non trouvé pour cet utilisateur." });
+        }
+
         cont.contrat = fichierUrl;
-        
-        
         await cont.save();
 
-            //Mail aux admins
+        // Envoi du mail aux admins
+        const utilisateur = await Utilisateur.findById(utilisateurID);
+        const adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "dossier@thecoastusa.com"];
 
-            const utilisateur = await Utilisateur.findById(utilisateurID);
-
-            adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "dossier@thecoastusa.com"]
-
-            await transporter.sendMail({
-                from: "admin@thecoastusa.com",
-                to: adminEmails.join(","),
-                subject: "Contrat soumis",
-                html: `
-                    <h2>Hello cher administrateur,</h2>
-                    <p>${utilisateur.nom} ${utilisateur.prenoms} ayant effectué son inscription en tant que ${utilisateur.role}, 
-                    vous a soumis son contrat pour vérification et validation qui est disponible sur l'espace de gestion !</p>
-                    <p>Veuillez vous connecter pour valider si vous l'avez bien reçu.</p>
-                    <hr/>
-                    <p>Signé : Votre IA adorée</p>
-                `
-            });
+        await transporter.sendMail({
+            from: "admin@thecoastusa.com",
+            to: adminEmails.join(","),
+            subject: "Contrat soumis",
+            html: `
+                <h2>Hello cher administrateur,</h2>
+                <p>${utilisateur.nom} ${utilisateur.prenoms} ayant effectué son inscription en tant que ${utilisateur.role}, 
+                vous a soumis son contrat pour vérification et validation qui est disponible sur l'espace de gestion !</p>
+                <p>Veuillez vous connecter pour valider si vous l'avez bien reçu.</p>
+                <hr/>
+                <p>Signé : Votre IA adorée</p>
+            `
+        });
 
         res.status(201).json({
             message: "Contrat envoyé avec succès.",
-            docs,
+            contrat : cont,
         });
     } catch (error) {
         console.error(error);
