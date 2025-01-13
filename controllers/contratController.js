@@ -52,84 +52,146 @@ exports.getContratByUtilisateurID = async (req, res) => {
     }
 };
 
-exports.annulerContrat = async (req, res) => {
+// exports.annulerContrat = async (req, res) => {
+//     try {
+//         const ct = await Contrat.findById(req.params.id);
+//         if (!ct) {
+//             return res.status(404).json({
+//                 message: 'Contrat non trouvé.',
+//             });
+//         }
+
+//         // Mettre à jour
+//         ct.contrat = '';
+//         ct.isValid = false
+
+//         await ct.save();
+
+//         //Informer
+
+//         const utilisateur = await Utilisateur.findById(ct.utilisateurID);
+
+//             await transporter.sendMail({
+//                 from: "admin@thecoastusa.com",
+//                 to: utilisateur.email,
+//                 subject: "Contrat refusé",
+//                 html: `
+//                     <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+//                     <p>Vous avez soumis le contrat mais il a été refusé par l'administration !</p>
+//                     <p>Vous devez donc vous reconnecter et ressoumettre.</p>
+//                 `
+//             });
+
+//         return res.status(200).json({
+//             message: 'Annulation de contrat effectuée avec succès !',
+//             documents: docs,
+//         });
+//     } catch (error) {
+//         console.error('Erreur pour annuler le contrat :', error);
+//         return res.status(500).json({
+//             message: 'Une erreur interne est survenue.',
+//             erreur: error.message,
+//         });
+//     }
+// };
+
+// exports.validerContrat = async (req, res) => {
+//     try {
+
+//         const ct = await Contrat.findById(req.params.id);
+//         if (!ct) {
+//             return res.status(404).json({
+//                 message: 'Contrat non trouvé.',
+//             });
+//         }
+
+//         // Mettre à jour
+//         ct.isValid = true
+
+//         await ct.save();
+
+//         //Informer
+//         const utilisateur = await Utilisateur.findById(docs.utilisateurID);
+
+//             await transporter.sendMail({
+//                 from: "admin@thecoastusa.com",
+//                 to: utilisateur.email,
+//                 subject: "Contrat Validé",
+//                 html: `
+//                     <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+//                     <p>Votre contrat a été validé et vous êtes officiellement des nôtres !</p>
+//                     <p>Veuillez suivre les formations et passer les tests pour vous préparer aux mises en relation.</p>
+//                     <p>Vous pouvez vous connecter et aller à la rubrique "Formations et Tests" pour procéder.</p>
+//                 `
+//             });
+
+//         return res.status(200).json({
+//             message: 'Contrat validé avec succès !'
+//         });
+//     } catch (error) {
+//         console.error('Erreur pour valider les documents soumis:', error);
+//         return res.status(500).json({
+//             message: 'Une erreur interne est survenue.',
+//             erreur: error.message,
+//         });
+//     }
+// };
+
+exports.updateValidationStatus = async (req, res) => {
     try {
-        const ct = await Contrat.findById(req.params.id);
-        if (!ct) {
+        // Récupérer le contrat
+        const contrat = await Contrat.findById(req.params.id);
+        if (!contrat) {
             return res.status(404).json({
                 message: 'Contrat non trouvé.',
             });
         }
 
-        // Mettre à jour
-        ct.contrat = '';
-        ct.isValid = false
+        // Mettre à jour le statut de validation
+        const { isValid } = req.body;
+        contrat.isValid = isValid;
 
-        await ct.save();
+        // Si le contrat est invalidé, vider le champ `contrat`
+        if (!isValid) {
+            contrat.contrat = '';
+        }
 
-        //Informer
+        await contrat.save();
 
-        const utilisateur = await Utilisateur.findById(ct.utilisateurID);
-
-            await transporter.sendMail({
-                from: "admin@thecoastusa.com",
-                to: utilisateur.email,
-                subject: "Contrat refusé",
-                html: `
-                    <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
-                    <p>Vous avez soumis le contrat mais il a été refusé par l'administration !</p>
-                    <p>Vous devez donc vous reconnecter et ressoumettre.</p>
-                `
-            });
-
-        return res.status(200).json({
-            message: 'Annulation de contrat effectuée avec succès !',
-            documents: docs,
-        });
-    } catch (error) {
-        console.error('Erreur pour annuler le contrat :', error);
-        return res.status(500).json({
-            message: 'Une erreur interne est survenue.',
-            erreur: error.message,
-        });
-    }
-};
-
-exports.validerContrat = async (req, res) => {
-    try {
-
-        const ct = await Contrat.findById(req.params.id);
-        if (!ct) {
+        // Informer l'utilisateur
+        const utilisateur = await Utilisateur.findById(contrat.utilisateurID);
+        if (!utilisateur) {
             return res.status(404).json({
-                message: 'Contrat non trouvé.',
+                message: 'Utilisateur associé au contrat non trouvé.',
             });
         }
 
-        // Mettre à jour
-        ct.isValid = true
+        const subject = isValid ? "Contrat Validé" : "Contrat Refusé";
+        const message = isValid
+            ? `
+                <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                <p>Votre contrat a été validé et vous êtes officiellement des nôtres !</p>
+                <p>Veuillez suivre les formations et passer les tests pour vous préparer aux mises en relation.</p>
+                <p>Vous pouvez vous connecter et aller à la rubrique "Formations et Tests" pour procéder.</p>
+            `
+            : `
+                <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                <p>Votre contrat a été refusé par l'administration.</p>
+                <p>Vous devez vous reconnecter et soumettre un nouveau contrat.</p>
+            `;
 
-        await ct.save();
-
-        //Informer
-        const utilisateur = await Utilisateur.findById(docs.utilisateurID);
-
-            await transporter.sendMail({
-                from: "admin@thecoastusa.com",
-                to: utilisateur.email,
-                subject: "Contrat Validé",
-                html: `
-                    <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
-                    <p>Votre contrat a été validé et vous êtes officiellement des nôtres !</p>
-                    <p>Veuillez suivre les formations et passer les tests pour vous préparer aux mises en relation.</p>
-                    <p>Vous pouvez vous connecter et aller à la rubrique "Formations et Tests" pour procéder.</p>
-                `
-            });
+        await transporter.sendMail({
+            from: "admin@thecoastusa.com",
+            to: utilisateur.email,
+            subject,
+            html: message,
+        });
 
         return res.status(200).json({
-            message: 'Contrat validé avec succès !'
+            message: `Statut du contrat mis à jour avec succès : ${isValid ? 'Validé' : 'Refusé'}.`,
         });
     } catch (error) {
-        console.error('Erreur pour valider les documents soumis:', error);
+        console.error('Erreur lors de la mise à jour du statut de validation :', error);
         return res.status(500).json({
             message: 'Une erreur interne est survenue.',
             erreur: error.message,

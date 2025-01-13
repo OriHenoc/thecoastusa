@@ -4,17 +4,18 @@ const upload = require('../middlewares/uploadPhoto');
 const {
     getAllContrats,
     getContratByUtilisateurID,
-    annulerContrat,
-    validerContrat,
+    updateValidationStatus,
+    // annulerContrat,
+    // validerContrat,
     soumettreContrat
 } = require('../controllers/contratController');
 
 const router = express.Router();
 router.post('/soumission', upload.single('contrat'), soumettreContrat)
 router.get('/byUtilisateur/:id', getContratByUtilisateurID);
-router.patch('/annuler/:id', annulerContrat);
-router.patch('/valider/:id', validerContrat);
-;
+// router.patch('/annuler/:id', annulerContrat);
+// router.patch('/valider/:id', validerContrat);
+router.patch('/validation/:id/', updateValidationStatus);
 router.get('/', getAllContrats);
 
 module.exports = router;
