@@ -5,7 +5,8 @@ const {
     soumettreDocument,
     getAllDocumentsSoumis,
     getDocumentsSoumisByUtilisateur,
-    annulerDocumentSoumis
+    annulerDocumentSoumis,
+    validerDocumentSoumis
 } = require('../controllers/documentsSoumisController');
 
 const router = express.Router();
@@ -13,5 +14,6 @@ router.post('/soumission', upload.single('document'), soumettreDocument);
 router.get('/', getAllDocumentsSoumis);
 router.get('/byUtilisateur/:id', getDocumentsSoumisByUtilisateur);
 router.patch('/annulerDoc', annulerDocumentSoumis);
+router.post('/valider/:id', validerDocumentSoumis);
 
 module.exports = router;
