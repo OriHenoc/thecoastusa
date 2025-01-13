@@ -21,6 +21,37 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+exports.getAllContrats = async (req, res) => {
+    try {
+        const contrats = await Contrat.find().populate('utilisateurID');
+        const total = await Contrat.countDocuments();
+        res.status(200).json({
+            total : total,
+            contrats : contrats
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Une erreur est survenue !',
+            erreur : error.message
+        });
+    }
+};
+
+exports.getContratByUtilisateurID = async (req, res) => {
+    try {
+        const contrat = await Contrat.find({utilisateurID : req.params.id}).populate('utilisateurID');
+        if (!contrat) return res.status(404).json('Contrat non trouvé !');
+        res.status(200).json({
+            contrat : contrat
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Mauvaise requête !',
+            erreur : error.message
+        });
+    }
+};
+
 exports.annulerContrat = async (req, res) => {
     try {
         const ct = await Contrat.findById(req.params.id);

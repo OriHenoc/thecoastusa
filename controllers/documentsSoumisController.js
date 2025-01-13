@@ -254,7 +254,7 @@ exports.annulerDocumentSoumis = async (req, res) => {
             });
 
         return res.status(200).json({
-            message: 'Mise à jour effectuée avec succès !',
+            message: 'Annulation effectuée avec succès !',
             documents: docs,
         });
     } catch (error) {
@@ -296,7 +296,7 @@ exports.validerDocumentSoumis = async (req, res) => {
             });
 
         return res.status(200).json({
-            message: 'Contrat proposé avec succès !'
+            message: 'Validation effectuée et contrat envoyé avec succès !'
         });
     } catch (error) {
         console.error('Erreur pour valider les documents soumis:', error);
