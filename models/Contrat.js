@@ -13,7 +13,7 @@ const ContratSchema = new Schema({
     },
     isValid: {
         type: Boolean,
-        default: true
+        default: false
     }
 }, {
     timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }
