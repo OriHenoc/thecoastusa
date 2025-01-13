@@ -6,6 +6,9 @@ const storage = multer.diskStorage({
         if (file.fieldname === 'document') {
             cb(null, 'uploads/documents/')
         }
+        if (file.fieldname === 'coursTexte' || file.fieldname === 'test') {
+            cb(null, 'uploads/formations/')
+        }
         if (file.fieldname === 'contrat') {
             cb(null, 'uploads/contrats/')
         }

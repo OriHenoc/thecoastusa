@@ -18,6 +18,7 @@ const questionRoute = require('./question');
 const reponseRoute = require('./reponse');
 const documentsSoumisRoute = require('./documentsSoumis');
 const contratRoute = require('./contrat');
+const formationRoute = require('./formation');
 
 router.use('/auth', authRoute);
 router.use('/pays', paysRoute);
@@ -36,5 +37,6 @@ router.use('/question', questionRoute);
 router.use('/reponse', reponseRoute);
 router.use('/documentsSoumis', documentsSoumisRoute);
 router.use('/contrat', contratRoute);
+router.use('/formation', formationRoute);
 
 module.exports = router;
