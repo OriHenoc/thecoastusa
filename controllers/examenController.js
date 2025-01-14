@@ -135,9 +135,6 @@ exports.annulerExamen = async (req, res) => {
         const utilisateur = await Utilisateur.findById(examen.utilisateurID);
         const formation = await Formation.findById(examen.formationID);
 
-        const deletedExamen = await Examen.findByIdAndDelete(req.params.id);
-        if (!deletedExamen) return res.status(404).json('Examen non trouvé !');
-
         //Mail à l'inscrit(e)
         await transporter.sendMail({
             from: '"The Coast USA" <admin@thecoastusa.com>',
@@ -149,6 +146,11 @@ exports.annulerExamen = async (req, res) => {
             `
         });
 
+        
+        const deletedExamen = await Examen.findByIdAndDelete(req.params.id);
+        if (!deletedExamen) return res.status(404).json('Examen non trouvé !');
+
+    
         let message = `Le test a été refusé ! `
         res.status(200).json({
             message : message,
