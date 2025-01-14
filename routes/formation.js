@@ -11,7 +11,8 @@ const {
     toggleFormationStatus,
     uploadCoursTexte,
     uploadTest,
-    uploadCoursVideo
+    uploadCoursVideo,
+    soumettreTest
 } = require('../controllers/formationController');
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.post('/', createFormation);
 router.post('/uploadCoursTexte/:id', upload.single('coursTexte'), uploadCoursTexte);
 router.post('/uploadTest/:id', upload.single('test'), uploadTest);
 router.post('/uploadCoursVideo/:id', uploadCoursVideo);
+router.post('/soumissionTest', upload.single('reponse'), soumettreTest);
 router.get('/', getAllFormation);
 router.get('/visibles', getAllVisibledFormation);
 router.get('/:id', getFormationById);

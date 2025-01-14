@@ -3,6 +3,8 @@ const FormData = require('form-data');
 const fs = require('fs-extra');
 const path = require('path');
 const Formation = require('../models/Formation');
+const Examen = require('../models/Examen');
+const Utilisateur = require('../models/Utilisateur');
 
 exports.createFormation = async (req, res) => {
     try {
@@ -264,6 +266,79 @@ exports.uploadCoursVideo = async (req, res) => {
         res.status(400).json({
             message: 'Mauvaise requête !',
             erreur: error.message
+        });
+    }
+};
+
+exports.soumettreTest = async (req, res) => {
+    try {
+        if (!req.file || !req.file.filename) {
+            return res.status(400).json({ message: "Aucun fichier n'a été fourni." });
+        }
+
+        const fichierPath = path.resolve('uploads/tests', req.file.filename);
+
+        const { utilisateurID, formationID } = req.body;
+
+        if (!utilisateurID || !formationID) {
+            return res.status(400).json({ message: "Certains éléments obligatoires sont manquants." });
+        }
+
+        let fichierUrl = null;
+        const form = new FormData();
+        form.append('file', fs.createReadStream(fichierPath));
+        const apiEndpoint = 'https://backthecoastusa.committeam.com/uploadReponseTest.php';
+
+        const response = await axios.post(apiEndpoint, form, {
+            headers: {
+                ...form.getHeaders(),
+            },
+        });
+
+        if (response.data.status !== 'success') {
+            throw new Error(response.data.message || 'Erreur lors du téléchargement du fichier');
+        }
+
+        fichierUrl = response.data.filePath;
+        if (!fichierUrl) {
+            return res.status(400).json({ message: "URL de la reponse manquante." });
+        }
+
+        const examen = new Examen({
+            utilisateurID,
+            formationID,
+            reponse: fichierUrl
+        });
+
+        await examen.save();
+
+        const utilisateur = await Utilisateur.findById(utilisateurID);
+
+            //Mail aux admins
+            adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "formation@thecoastusa.com"]
+
+            await transporter.sendMail({
+                from: "admin@thecoastusa.com",
+                to: adminEmails.join(","),
+                subject: "Reponse de test",
+                html: `
+                    <h2>Hello cher administrateur,</h2>
+                    <p>${utilisateur.nom} ${utilisateur.prenoms} vous a soumis des réponses à un test pour vérification qui est disponible sur l'espace de gestion !</p>
+                    <p>Veuillez vous connecter pour valider si vous l'avez bien reçu.</p>
+                    <hr/>
+                    <p>Signé : Votre IA adorée</p>
+                `
+            });
+
+        res.status(201).json({
+            message: "Test enregistré avec succès.",
+            examen,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Une erreur est survenue lors de l'enregistrement de la soumission.",
+            erreur: error.message,
         });
     }
 };
