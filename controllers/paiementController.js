@@ -100,7 +100,7 @@ exports.confirmPaiementStatus = async (req, res) => {
         await utilisateur.save();
 
         await transporter.sendMail({
-            from: "admin@thecoastusa.com",
+            from: '"The Coast USA" <admin@thecoastusa.com>',
             to: utilisateur.email,
             subject: "Paiement confirmé",
             html: `
@@ -220,7 +220,7 @@ exports.soumettrePaiement = async (req, res) => {
             const utilisateur = await Utilisateur.findById(paiement.utilisateurID);
 
             await transporter.sendMail({
-                from: "admin@thecoastusa.com",
+                from: '"The Coast USA" <admin@thecoastusa.com>',
                 to: utilisateur.email,
                 subject: "Preuve de paiement soumise",
                 html: `
@@ -235,7 +235,7 @@ exports.soumettrePaiement = async (req, res) => {
             adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "paiement@thecoastusa.com"]
 
             await transporter.sendMail({
-                from: "admin@thecoastusa.com",
+                from: '"The Coast USA" <admin@thecoastusa.com>',
                 to: adminEmails.join(","),
                 subject: "Preuve de paiement soumise",
                 html: `

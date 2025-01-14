@@ -72,7 +72,7 @@ exports.getContratByUtilisateurID = async (req, res) => {
 //         const utilisateur = await Utilisateur.findById(ct.utilisateurID);
 
 //             await transporter.sendMail({
-//                 from: "admin@thecoastusa.com",
+//                 from: '"The Coast USA" <admin@thecoastusa.com>',
 //                 to: utilisateur.email,
 //                 subject: "Contrat refusé",
 //                 html: `
@@ -114,7 +114,7 @@ exports.getContratByUtilisateurID = async (req, res) => {
 //         const utilisateur = await Utilisateur.findById(docs.utilisateurID);
 
 //             await transporter.sendMail({
-//                 from: "admin@thecoastusa.com",
+//                 from: '"The Coast USA" <admin@thecoastusa.com>',
 //                 to: utilisateur.email,
 //                 subject: "Contrat Validé",
 //                 html: `
@@ -181,7 +181,7 @@ exports.updateValidationStatus = async (req, res) => {
             `;
 
         await transporter.sendMail({
-            from: "admin@thecoastusa.com",
+            from: '"The Coast USA" <admin@thecoastusa.com>',
             to: utilisateur.email,
             subject,
             html: message,
@@ -251,7 +251,7 @@ exports.soumettreContrat = async (req, res) => {
         const adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "dossier@thecoastusa.com"];
 
         await transporter.sendMail({
-            from: "admin@thecoastusa.com",
+            from: '"The Coast USA" <admin@thecoastusa.com>',
             to: adminEmails.join(","),
             subject: "Contrat soumis",
             html: `

@@ -334,7 +334,7 @@ exports.soumettreTest = async (req, res) => {
             adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "formation@thecoastusa.com"]
 
             await transporter.sendMail({
-                from: "admin@thecoastusa.com",
+                from: '"The Coast USA" <admin@thecoastusa.com>',
                 to: adminEmails.join(","),
                 subject: "Reponse de test",
                 html: `

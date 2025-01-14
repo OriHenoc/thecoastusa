@@ -89,7 +89,7 @@ exports.submitReponses = async (req, res) => {
       //Mail
 
       await transporter.sendMail({
-          from: "admin@thecoastusa.com",
+          from: '"The Coast USA" <admin@thecoastusa.com>',
           to: utilisateur.email,
           subject: "Questionnaire soumis",
           html: `
@@ -103,7 +103,7 @@ exports.submitReponses = async (req, res) => {
       adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "dossier@thecoastusa.com"]
 
       await transporter.sendMail({
-          from: "admin@thecoastusa.com",
+          from: '"The Coast USA" <admin@thecoastusa.com>',
           to: adminEmails.join(","),
           subject: "Questionnaire soumis et en attente de validation",
           html: `
@@ -377,7 +377,7 @@ exports.validerReponses = async (req, res) => {
 
       //Mail
         await transporter.sendMail({
-          from: "admin@thecoastusa.com",
+          from: '"The Coast USA" <admin@thecoastusa.com>',
           to: utilisateur.email,
           subject: "Etape suivante",
           html: `
@@ -390,7 +390,7 @@ exports.validerReponses = async (req, res) => {
     else{
       //Mail
       await transporter.sendMail({
-        from: "admin@thecoastusa.com",
+        from: '"The Coast USA" <admin@thecoastusa.com>',
         to: utilisateur.email,
         subject: "Questionnaire validé",
         html: `
@@ -447,7 +447,7 @@ exports.refuserReponses = async (req, res) => {
 
 
     await transporter.sendMail({
-        from: "admin@thecoastusa.com",
+        from: '"The Coast USA" <admin@thecoastusa.com>',
         to: utilisateur.email,
         subject: "Questionnaire à reprendre",
         html: `

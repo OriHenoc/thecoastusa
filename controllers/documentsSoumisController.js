@@ -135,7 +135,7 @@ exports.soumettreDocument = async (req, res) => {
             adminEmails = ["info@thecoastusa.com", "inscription@thecoastusa.com", "dossier@thecoastusa.com"]
 
             await transporter.sendMail({
-                from: "admin@thecoastusa.com",
+                from: '"The Coast USA" <admin@thecoastusa.com>',
                 to: adminEmails.join(","),
                 subject: "Document soumis",
                 html: `
@@ -241,7 +241,7 @@ exports.annulerDocumentSoumis = async (req, res) => {
         const utilisateur = await Utilisateur.findById(docs.utilisateurID);
 
             await transporter.sendMail({
-                from: "admin@thecoastusa.com",
+                from: '"The Coast USA" <admin@thecoastusa.com>',
                 to: utilisateur.email,
                 subject: "Document refusé",
                 html: `
@@ -283,7 +283,7 @@ exports.validerDocumentSoumis = async (req, res) => {
         const utilisateur = await Utilisateur.findById(docs.utilisateurID);
 
             await transporter.sendMail({
-                from: "admin@thecoastusa.com",
+                from: '"The Coast USA" <admin@thecoastusa.com>',
                 to: utilisateur.email,
                 subject: "Contrat Disponible",
                 html: `
