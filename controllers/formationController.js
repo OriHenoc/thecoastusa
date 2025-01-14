@@ -5,6 +5,22 @@ const path = require('path');
 const Formation = require('../models/Formation');
 const Examen = require('../models/Examen');
 const Utilisateur = require('../models/Utilisateur');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+
+
+const transporter = nodemailer.createTransport({
+    host: 'mail.thecoastusa.com',
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
 
 exports.createFormation = async (req, res) => {
     try {
