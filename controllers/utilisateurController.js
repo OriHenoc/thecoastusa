@@ -393,3 +393,35 @@ exports.getFillesToShow = async (req, res) => {
         });
     }
 };
+
+exports.getAllFilles = async (req, res) => {
+    try {
+        
+        let filles = await Utilisateur.find({ role : 'fille' }).populate(['paysID']);
+
+        res.status(200).json({
+            filles : filles.reverse()
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Une erreur est survenue !',
+            erreur : error.message
+        });
+    }
+};
+
+exports.getAllFamilles = async (req, res) => {
+    try {
+        
+        let familles = await Utilisateur.find({ role : 'famille' }).populate(['paysID']);
+
+        res.status(200).json({
+            familles : familles.reverse()
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Une erreur est survenue !',
+            erreur : error.message
+        });
+    }
+};

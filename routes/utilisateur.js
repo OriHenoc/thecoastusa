@@ -11,7 +11,9 @@ const {
     getUtilisateurById,
     deleteUtilisateur,
     toggleUtilisateurStatus,
-    getFillesToShow
+    getFillesToShow,
+    getAllFilles,
+    getAllFamilles
 } = require('../controllers/utilisateurController');
 
 const router = express.Router();
@@ -19,6 +21,8 @@ const router = express.Router();
 
 
 router.get('/fillesToShow', getFillesToShow);
+router.get('/filles', getAllFilles);
+router.get('/familles', getAllFamilles);
 router.post('/updatePhoto/:id', authMiddleware, upload.single('photoDeProfil'), uploadPhotoProfil);
 
 router.get('/actifs', getAllActivedUtilisateur);
