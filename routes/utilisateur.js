@@ -24,5 +24,6 @@ router.put('/:id/updateInfos', authMiddleware, updateInfosUtilisateur);
 router.put('/:id/updateMotDePasse', authMiddleware, updateMotDePasse);
 router.delete('/:id', authMiddleware, deleteUtilisateur);
 router.patch('/:id/toggleStatus', authMiddleware, toggleUtilisateurStatus);
+router.get('/fillesToShow', getFillesToShow);
 
 module.exports = router;

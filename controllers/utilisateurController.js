@@ -354,3 +354,22 @@ exports.uploadPhotoProfil = async (req, res) => {
         });
     }
 };
+
+
+exports.getAllUtilisateur = async (req, res) => {
+    try {
+        const utilisateurs = await Utilisateur.find().populate(['paysID']);
+        const total = await Utilisateur.countDocuments();
+        const actifs = await Utilisateur.countDocuments({ compteActif: true });
+        res.status(200).json({
+            total : total,
+            actifs : actifs,
+            utilisateurs : utilisateurs.reverse()
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Une erreur est survenue !',
+            erreur : error.message
+        });
+    }
+};

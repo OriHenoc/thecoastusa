@@ -59,8 +59,6 @@ exports.getDocumentsSoumisByUtilisateur = async (req, res) => {
     }
 };
 
-
-
 exports.soumettreDocument = async (req, res) => {
     try {
         if (!req.file || !req.file.filename) {
