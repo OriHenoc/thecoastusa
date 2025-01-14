@@ -10,20 +10,25 @@ const {
     updateMotDePasse,
     getUtilisateurById,
     deleteUtilisateur,
-    toggleUtilisateurStatus
+    toggleUtilisateurStatus,
+    getFillesToShow
 } = require('../controllers/utilisateurController');
 
 const router = express.Router();
 
-router.post('/', authMiddleware, createUtilisateur);
+
+
+router.get('/fillesToShow', getFillesToShow);
 router.post('/updatePhoto/:id', authMiddleware, upload.single('photoDeProfil'), uploadPhotoProfil);
-router.get('/', getAllUtilisateur);
+
 router.get('/actifs', getAllActivedUtilisateur);
-router.get('/:id', getUtilisateurById);
 router.put('/:id/updateInfos', authMiddleware, updateInfosUtilisateur);
 router.put('/:id/updateMotDePasse', authMiddleware, updateMotDePasse);
 router.delete('/:id', authMiddleware, deleteUtilisateur);
 router.patch('/:id/toggleStatus', authMiddleware, toggleUtilisateurStatus);
-//router.get('/fillesToShow', getFillesToShow);
+
+router.post('/', authMiddleware, createUtilisateur);
+router.get('/', getAllUtilisateur);
+router.get('/:id', getUtilisateurById);
 
 module.exports = router;

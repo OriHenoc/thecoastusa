@@ -7,6 +7,7 @@ const crypto = require('crypto');
 require('dotenv').config();
 const axios = require('axios');
 const FormData = require('form-data');
+const Contrat = require('../models/Contrat');
 
 // Fonction pour générer un mot de passe aléatoire
 function generateRandomPassword(length = 8) {
@@ -365,6 +366,25 @@ exports.getAllUtilisateur = async (req, res) => {
             total : total,
             actifs : actifs,
             utilisateurs : utilisateurs.reverse()
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Une erreur est survenue !',
+            erreur : error.message
+        });
+    }
+};
+
+exports.getFillesToShow = async (req, res) => {
+    try {
+        
+        let contrats = await Contrat.find({ isValid : true });
+        let tb= [];
+        contrats.forEach(element => tb.push(element.utilisateurID));
+        let filles = await Utilisateur.find({ _id : { $in : tb }, role : 'fille', compteActif : true, visible : true }).populate(['paysID']);
+
+        res.status(200).json({
+            filles : filles.reverse()
         });
     } catch (error) {
         res.status(400).json({
