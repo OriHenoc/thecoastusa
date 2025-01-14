@@ -118,11 +118,13 @@ exports.validerExamen = async (req, res) => {
 
         let message = `Le test a été validé ! `
         res.status(200).json({
+            success: true,
             message : message,
             examen : examen
         });
     } catch (error) {
         res.status(400).json({
+            success: false,
             message : 'Mauvaise requête !',
             erreur : error.message
         });
@@ -153,11 +155,13 @@ exports.annulerExamen = async (req, res) => {
     
         let message = `Le test a été refusé ! `
         res.status(200).json({
+            success: true,
             message : message,
             deletedExamen : deletedExamen
         });
     } catch (error) {
         res.status(400).json({
+            success: false,
             message : 'Mauvaise requête !',
             erreur : error.message
         });
