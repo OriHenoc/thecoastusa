@@ -4,7 +4,7 @@ const Utilisateur = require('../models/Utilisateur');
 
 exports.getAllExamen = async (req, res) => {
     try {
-        const examens = await Examen.find();
+        const examens = await Examen.find().populate(['utilisateurID', 'formationID']);
         const total = await Examen.countDocuments();
         res.status(200).json({
             total : total,
@@ -20,7 +20,7 @@ exports.getAllExamen = async (req, res) => {
 
 exports.getExamenById = async (req, res) => {
     try {
-        const examen = await Examen.findById(req.params.id);
+        const examen = await Examen.findById(req.params.id).populate(['utilisateurID', 'formationID']);
         if (!examen) return res.status(404).json('Examen non trouvé !');
         res.status(200).json({
             examen : examen
@@ -35,7 +35,7 @@ exports.getExamenById = async (req, res) => {
 
 exports.getExamenByUtilisateurID = async (req, res) => {
     try {
-        const examen = await Examen.find({utilisateurID : req.params.id}).populate('utilisateurID');
+        const examen = await Examen.find({utilisateurID : req.params.id}).populate(['utilisateurID', 'formationID']);
         if (!examen) return res.status(404).json('Examen non trouvé !');
         res.status(200).json({
             examen : examen
