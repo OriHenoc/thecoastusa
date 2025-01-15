@@ -24,7 +24,6 @@ exports.getQuestionnaire = async (req, res) => {
 
         const questionnaire = await Questionnaire.findOne({
         categorie: 'famille',
-        ordre: progression.questionnaireActuel
         }).populate('questions');
 
         if (!questionnaire) {

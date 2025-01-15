@@ -4,6 +4,7 @@ const QuestionnaireFille = require('../models/QuestionnaireFille');
 const QuestionnaireFamille = require('../models/QuestionnaireFamille');
 const Utilisateur = require('../models/Utilisateur')
 const nodemailer = require('nodemailer');
+const DocumentsSoumis = require('../models/DocumentsSoumis');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -347,29 +348,19 @@ exports.validerReponses = async (req, res) => {
       });
 
       await progression.save();
-    }
 
-    if(utilisateur.role == 'famille'){
-      const progression = await QuestionnaireFamille.findOne({ familleID: reponse.utilisateurID });
+      const progressionUpdate = await QuestionnaireFille.findOne({ filleID: reponse.utilisateurID });
 
-      if (!progression) {
-        return res.status(404).json({ message: 'Progression non trouvée.' });
-      }
 
-      // Valider le questionnaire actuel
-      if (progression.questionnaireActuel <= progression.nbreValides) {
-        return res.status(400).json({ message: 'Ce questionnaire a déjà été validé.' });
-      }
-      
-      // Incrémenter le compteur et mettre à jour l'état
-      progression.nbreValides += 1;
-        progression.questionnaireActuel += 1;
-        progression.etat = 'complet';
 
-      await progression.save();
-    }
+    if(progressionUpdate.etat == 'complet'){
 
-    if(progression.etat == 'complet'){
+
+      // debut document
+      const doc = new DocumentsSoumis({ utilisateurID : reponse.utilisateurID });
+
+      await doc.save();
+
 
       //Mail
         await transporter.sendMail({
@@ -395,8 +386,40 @@ exports.validerReponses = async (req, res) => {
             <p>Vous pouvez vous connecter pour poursuivre la composition de votre dossier.</p>`
     });
     }
-    
+    }
 
+    if(utilisateur.role == 'famille'){
+      const progression = await QuestionnaireFamille.findOne({ familleID: reponse.utilisateurID });
+
+      if (!progression) {
+        return res.status(404).json({ message: 'Progression non trouvée.' });
+      }
+
+      // Valider le questionnaire actuel
+      if (progression.questionnaireActuel <= progression.nbreValides) {
+        return res.status(400).json({ message: 'Ce questionnaire a déjà été validé.' });
+      }
+      
+      // Incrémenter le compteur et mettre à jour l'état
+      progression.nbreValides += 1;
+        progression.questionnaireActuel += 1;
+        progression.etat = 'complet';
+
+      await progression.save();
+
+    //Mail
+        await transporter.sendMail({
+          from: '"The Coast USA" <admin@thecoastusa.com>',
+          to: utilisateur.email,
+          subject: "Etape suivante",
+          html: `
+              <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+              <p>L'administration a validé vos réponses au questionnaire soumis précédemment !</p>
+              <p>Votre profil est complet ! Bienvenue au programme !</p>`
+      });
+    }
+
+    
     res.status(200).json({ message: 'Réponse validée avec succès.' });
   } catch (error) {
     console.error(error);
