@@ -363,12 +363,8 @@ exports.validerReponses = async (req, res) => {
       
       // Incrémenter le compteur et mettre à jour l'état
       progression.nbreValides += 1;
-      if (progression.nbreValides < 3) {
         progression.questionnaireActuel += 1;
-        progression.etat = 'en_cours';
-      } else {
         progression.etat = 'complet';
-      }
 
       await progression.save();
     }
