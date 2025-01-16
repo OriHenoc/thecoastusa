@@ -162,10 +162,10 @@ exports.updateInfosUtilisateur = async (req, res) => {
 
 exports.updateInfosUtilisateurPlus = async (req, res) => {
     try {
-        const { biographie, experience } = req.body;
+        const { biographie, experience, paysID } = req.body;
         const utilisateur = await Utilisateur.findByIdAndUpdate(
             req.params.id,
-            { biographie, experience },
+            { biographie, experience, paysID },
             { new: true, runValidators: true }
         ).populate(['paysID', 'langues']);
 
