@@ -142,7 +142,7 @@ exports.updateInfosUtilisateur = async (req, res) => {
             req.params.id,
             { nom, prenoms, dateDeNaissance, telephone, email, paysID, role },
             { new: true, runValidators: true }
-        );
+        ).populate(['paysID', 'langues']);
 
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
@@ -171,7 +171,7 @@ exports.updateMotDePasse = async (req, res) => {
         }
 
         // Trouver l'utilisateur par ID
-        const utilisateur = await Utilisateur.findById(req.params.id);
+        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
@@ -219,7 +219,7 @@ exports.deleteUtilisateur = async (req, res) => {
 // Activer/Désactiver un utilisateur
 exports.toggleUtilisateurStatus = async (req, res) => {
     try {
-        const utilisateur = await Utilisateur.findById(req.params.id);
+        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
@@ -292,7 +292,7 @@ exports.toggleUtilisateurStatus = async (req, res) => {
 // Télécharger une photo de profil en utilisant un script PHP pour le stockage
 exports.uploadPhotoProfil = async (req, res) => {
     try {
-        const utilisateur = await Utilisateur.findById(req.params.id);
+        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
@@ -416,7 +416,7 @@ exports.addLangues = async (req, res) => {
             return res.status(400).json({success: false, message: "Langue invalide !" });
         }
 
-        const utilisateur = await Utilisateur.findById(utilisateurID);
+        const utilisateur = await Utilisateur.findById(utilisateurID).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
