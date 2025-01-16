@@ -413,7 +413,7 @@ exports.addLangues = async (req, res) => {
         const { langue, utilisateurID } = req.body;
 
         if (!langue) {
-            return res.status(400).json({ message: "Langue invalide !" });
+            return res.status(400).json({success: false, message: "Langue invalide !" });
         }
 
         const utilisateur = await Utilisateur.findById(utilisateurID);
@@ -424,6 +424,9 @@ exports.addLangues = async (req, res) => {
         if (!utilisateur.langues.includes(langue)) {
             utilisateur.langues.push(langue);
             await utilisateur.save();
+        }
+        else{
+            return res.status(400).json({success: false, message: "La langue existe déjà !" });
         }
 
         res.status(200).json({
