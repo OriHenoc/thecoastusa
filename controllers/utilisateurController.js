@@ -439,7 +439,7 @@ exports.addLangues = async (req, res) => {
         const { langue, utilisateurID } = req.body;
 
         if (!langue) {
-            return res.status(400).json({success: false, message: "Langue invalide !" });
+            return res.status(400).json({ success: false, message: "Langue invalide !" });
         }
 
         const utilisateur = await Utilisateur.findById(utilisateurID).populate(['paysID', 'langues']);
@@ -447,13 +447,15 @@ exports.addLangues = async (req, res) => {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
 
-        if (!utilisateur.langues.includes(langue)) {
-            utilisateur.langues.push(langue);
-            await utilisateur.save();
+        // Vérification correcte si la langue existe déjà
+        const langueExiste = utilisateur.langues.some(l => l.toString() === langue.toString());
+        if (langueExiste) {
+            return res.status(400).json({ success: false, message: "La langue existe déjà !" });
         }
-        else{
-            return res.status(400).json({success: false, message: "La langue existe déjà !" });
-        }
+
+        // Ajout de la langue
+        utilisateur.langues.push(langue);
+        await utilisateur.save();
 
         res.status(200).json({
             message: 'Langue ajoutée avec succès !',
