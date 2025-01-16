@@ -85,7 +85,7 @@ exports.createUtilisateur = async (req, res) => {
 // Obtenir tous les utilisateurs
 exports.getAllUtilisateur = async (req, res) => {
     try {
-        const utilisateurs = await Utilisateur.find().populate(['paysID']);
+        const utilisateurs = await Utilisateur.find().populate(['paysID', 'langues']);
         const total = await Utilisateur.countDocuments();
         const actifs = await Utilisateur.countDocuments({ compteActif: true });
         res.status(200).json({
@@ -104,7 +104,7 @@ exports.getAllUtilisateur = async (req, res) => {
 // Obtenir tous les utilisateurs actifs
 exports.getAllActivedUtilisateur = async (req, res) => {
     try {
-        const utilisateurs = await Utilisateur.find({ compteActif: true }).populate(['paysID']);
+        const utilisateurs = await Utilisateur.find({ compteActif: true }).populate(['paysID', 'langues']);
         res.status(200).json({
             utilisateurs : utilisateurs.reverse()
         });
@@ -119,7 +119,7 @@ exports.getAllActivedUtilisateur = async (req, res) => {
 // Obtenir un utilisateur par ID
 exports.getUtilisateurById = async (req, res) => {
     try {
-        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID']);
+        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
@@ -357,31 +357,13 @@ exports.uploadPhotoProfil = async (req, res) => {
 };
 
 
-exports.getAllUtilisateur = async (req, res) => {
-    try {
-        const utilisateurs = await Utilisateur.find().populate(['paysID']);
-        const total = await Utilisateur.countDocuments();
-        const actifs = await Utilisateur.countDocuments({ compteActif: true });
-        res.status(200).json({
-            total : total,
-            actifs : actifs,
-            utilisateurs : utilisateurs.reverse()
-        });
-    } catch (error) {
-        res.status(400).json({
-            message : 'Une erreur est survenue !',
-            erreur : error.message
-        });
-    }
-};
-
 exports.getFillesToShow = async (req, res) => {
     try {
         
         let contrats = await Contrat.find({ isValid : true });
         let tb= [];
         contrats.forEach(element => tb.push(element.utilisateurID));
-        let filles = await Utilisateur.find({ _id : { $in : tb }, role : 'fille', compteActif : true, visible : true }).populate(['paysID']);
+        let filles = await Utilisateur.find({ _id : { $in : tb }, role : 'fille', compteActif : true, visible : true }).populate(['paysID', 'langues']);
 
         res.status(200).json({
             filles : filles.reverse()
@@ -397,7 +379,7 @@ exports.getFillesToShow = async (req, res) => {
 exports.getAllFilles = async (req, res) => {
     try {
         
-        let filles = await Utilisateur.find({ role : 'fille' }).populate(['paysID']);
+        let filles = await Utilisateur.find({ role : 'fille' }).populate(['paysID', 'langues']);
 
         res.status(200).json({
             filles : filles.reverse()
@@ -413,7 +395,7 @@ exports.getAllFilles = async (req, res) => {
 exports.getAllFamilles = async (req, res) => {
     try {
         
-        let familles = await Utilisateur.find({ role : 'famille' }).populate(['paysID']);
+        let familles = await Utilisateur.find({ role : 'famille' }).populate(['paysID', 'langues']);
 
         res.status(200).json({
             familles : familles.reverse()
@@ -422,6 +404,36 @@ exports.getAllFamilles = async (req, res) => {
         res.status(400).json({
             message : 'Une erreur est survenue !',
             erreur : error.message
+        });
+    }
+};
+
+exports.addLangues = async (req, res) => {
+    try {
+        const { langue, utilisateurID } = req.body;
+
+        if (!langue) {
+            return res.status(400).json({ message: "Langue invalide !" });
+        }
+
+        const utilisateur = await Utilisateur.findById(utilisateurID);
+        if (!utilisateur) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé !' });
+        }
+
+        if (!utilisateur.langues.includes(langue)) {
+            utilisateur.langues.push(langue);
+            await utilisateur.save();
+        }
+
+        res.status(200).json({
+            message: 'Langue ajoutée avec succès !',
+            utilisateur: utilisateur
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: "Une erreur est survenue lors de l'ajout de la langue.",
+            erreur: error.message
         });
     }
 };

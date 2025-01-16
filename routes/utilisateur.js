@@ -13,13 +13,14 @@ const {
     toggleUtilisateurStatus,
     getFillesToShow,
     getAllFilles,
-    getAllFamilles
+    getAllFamilles,
+    addLangues
 } = require('../controllers/utilisateurController');
 
 const router = express.Router();
 
 
-
+router.post('/addLangue', addLangues);
 router.get('/fillesToShow', getFillesToShow);
 router.get('/filles', getAllFilles);
 router.get('/familles', getAllFamilles);
