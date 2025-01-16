@@ -160,6 +160,32 @@ exports.updateInfosUtilisateur = async (req, res) => {
     }
 };
 
+exports.updateInfosUtilisateurPlus = async (req, res) => {
+    try {
+        const { biographie, experience } = req.body;
+        const utilisateur = await Utilisateur.findByIdAndUpdate(
+            req.params.id,
+            { biographie, experience },
+            { new: true, runValidators: true }
+        ).populate(['paysID', 'langues']);
+
+        if (!utilisateur) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé !' });
+        }
+
+        res.status(200).json({
+            message: 'Les informations du compte ont été mises à jour !',
+            utilisateur: utilisateur
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: 'Mauvaise requête !',
+            erreur: error.message
+        });
+    }
+};
+
+
 // Mettre à jour le mot de passe d'un utilisateur
 exports.updateMotDePasse = async (req, res) => {
     try {
