@@ -85,7 +85,7 @@ exports.createUtilisateur = async (req, res) => {
 // Obtenir tous les utilisateurs
 exports.getAllUtilisateur = async (req, res) => {
     try {
-        const utilisateurs = await Utilisateur.find().populate(['paysID', 'langues']); await utilisateurs.populate("langues").execPopulate();
+        const utilisateurs = await Utilisateur.find().populate(['paysID', 'langues']);
         const total = await Utilisateur.countDocuments();
         const actifs = await Utilisateur.countDocuments({ compteActif: true });
         res.status(200).json({
@@ -104,7 +104,7 @@ exports.getAllUtilisateur = async (req, res) => {
 // Obtenir tous les utilisateurs actifs
 exports.getAllActivedUtilisateur = async (req, res) => {
     try {
-        const utilisateurs = await Utilisateur.find({ compteActif: true }).populate(['paysID', 'langues']); await utilisateurs.populate("langues").execPopulate();
+        const utilisateurs = await Utilisateur.find({ compteActif: true }).populate(['paysID', 'langues']);
         res.status(200).json({
             utilisateurs : utilisateurs.reverse()
         });
@@ -119,7 +119,7 @@ exports.getAllActivedUtilisateur = async (req, res) => {
 // Obtenir un utilisateur par ID
 exports.getUtilisateurById = async (req, res) => {
     try {
-        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']); await utilisateur.populate("langues").execPopulate();
+        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
@@ -142,7 +142,7 @@ exports.updateInfosUtilisateur = async (req, res) => {
             req.params.id,
             { nom, prenoms, dateDeNaissance, telephone, email, paysID, role },
             { new: true, runValidators: true }
-        ).populate(['paysID', 'langues']); await utilisateur.populate("langues").execPopulate();
+        ).populate(['paysID', 'langues']);
 
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
@@ -171,7 +171,7 @@ exports.updateMotDePasse = async (req, res) => {
         }
 
         // Trouver l'utilisateur par ID
-        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']); await utilisateur.populate("langues").execPopulate();
+        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
@@ -219,7 +219,7 @@ exports.deleteUtilisateur = async (req, res) => {
 // Activer/Désactiver un utilisateur
 exports.toggleUtilisateurStatus = async (req, res) => {
     try {
-        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']); await utilisateur.populate("langues").execPopulate();
+        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
@@ -292,7 +292,7 @@ exports.toggleUtilisateurStatus = async (req, res) => {
 // Télécharger une photo de profil en utilisant un script PHP pour le stockage
 exports.uploadPhotoProfil = async (req, res) => {
     try {
-        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']); await utilisateur.populate("langues").execPopulate();
+        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
@@ -363,7 +363,7 @@ exports.getFillesToShow = async (req, res) => {
         let contrats = await Contrat.find({ isValid : true });
         let tb= [];
         contrats.forEach(element => tb.push(element.utilisateurID));
-        let filles = await Utilisateur.find({ _id : { $in : tb }, role : 'fille', compteActif : true, visible : true }).populate(['paysID', 'langues']); await filles.populate("langues").execPopulate();
+        let filles = await Utilisateur.find({ _id : { $in : tb }, role : 'fille', compteActif : true, visible : true }).populate(['paysID', 'langues']);
 
         res.status(200).json({
             filles : filles.reverse()
@@ -379,7 +379,7 @@ exports.getFillesToShow = async (req, res) => {
 exports.getAllFilles = async (req, res) => {
     try {
         
-        let filles = await Utilisateur.find({ role : 'fille' }).populate(['paysID', 'langues']); await filles.populate("langues").execPopulate();
+        let filles = await Utilisateur.find({ role : 'fille' }).populate(['paysID', 'langues']);
 
         res.status(200).json({
             filles : filles.reverse()
@@ -395,7 +395,7 @@ exports.getAllFilles = async (req, res) => {
 exports.getAllFamilles = async (req, res) => {
     try {
         
-        let familles = await Utilisateur.find({ role : 'famille' }).populate(['paysID', 'langues']); await familles.populate("langues").execPopulate();
+        let familles = await Utilisateur.find({ role : 'famille' }).populate(['paysID', 'langues']);
 
         res.status(200).json({
             familles : familles.reverse()
@@ -416,7 +416,7 @@ exports.addLangues = async (req, res) => {
             return res.status(400).json({success: false, message: "Langue invalide !" });
         }
 
-        const utilisateur = await Utilisateur.findById(utilisateurID).populate(['paysID', 'langues']); await utilisateur.populate("langues").execPopulate();
+        const utilisateur = await Utilisateur.findById(utilisateurID).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
