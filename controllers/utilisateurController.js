@@ -465,3 +465,57 @@ exports.addLangues = async (req, res) => {
         });
     }
 };
+
+exports.updateVisibility = async (req, res) => {
+    try {
+        const utilisateur = await Utilisateur.findById(req.params.id);
+        if (!utilisateur) return res.status(404).json('Utilisateur non trouvé !');
+
+        utilisateur.visible = !utilisateur.visible;
+        await utilisateur.save();
+        let message = `La visibilité de l'utilisateur a été mise à jour ! `
+        let statut = utilisateur.visible;
+        if(statut){
+            message = `Vous êtes désormais visible !\n Veuillez vous reconnecter !`
+        }
+        else{
+            message = `Vous êtes désormais invisible !\n Veuillez vous reconnecter !`
+        }
+        res.status(200).json({
+            message : message,
+            utilisateur : utilisateur
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Mauvaise requête !',
+            erreur : error.message
+        });
+    }
+};
+
+exports.toggleCompteActif = async (req, res) => {
+    try {
+        const utilisateur = await Utilisateur.findById(req.params.id);
+        if (!utilisateur) return res.status(404).json('Utilisateur non trouvé !');
+
+        utilisateur.compteActif = !utilisateur.compteActif;
+        await utilisateur.save();
+        let message = `Le compte de l'utilisateur a été mise à jour ! `
+        let statut = utilisateur.compteActif;
+        if(statut){
+            message = `Compte de l'utilisateur activé`
+        }
+        else{
+            message = `Le compte est désormais inactif !`
+        }
+        res.status(200).json({
+            message : message,
+            utilisateur : utilisateur
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Mauvaise requête !',
+            erreur : error.message
+        });
+    }
+};

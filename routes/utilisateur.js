@@ -15,7 +15,9 @@ const {
     getFillesToShow,
     getAllFilles,
     getAllFamilles,
-    addLangues
+    addLangues,
+    updateVisibility,
+    toggleCompteActif
 } = require('../controllers/utilisateurController');
 
 const router = express.Router();
@@ -33,6 +35,8 @@ router.put('/:id/updateInfos2', authMiddleware, updateInfosUtilisateurPlus);
 router.put('/:id/updateMotDePasse', authMiddleware, updateMotDePasse);
 router.delete('/:id', authMiddleware, deleteUtilisateur);
 router.patch('/:id/toggleStatus', authMiddleware, toggleUtilisateurStatus);
+router.patch('/:id/updateVisibility', authMiddleware, updateVisibility);
+router.patch('/:id/toggleCompteActif', authMiddleware, toggleCompteActif);
 
 router.post('/', authMiddleware, createUtilisateur);
 router.get('/', getAllUtilisateur);
