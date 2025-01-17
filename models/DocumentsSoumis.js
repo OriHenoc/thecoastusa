@@ -30,6 +30,14 @@ const DocumentsSoumisSchema = new Schema({
         type: String,
         required: false
     },
+    verificationOfEmployment: {
+        type: String,
+        required: false
+    },
+    proofOfResidence: {
+        type: String,
+        required: false
+    },
     utilisateurID: {
         type: Schema.Types.ObjectId,
         ref: 'Utilisateur',

@@ -407,6 +407,11 @@ exports.validerReponses = async (req, res) => {
 
       await progression.save();
 
+      // debut document
+      const doc = new DocumentsSoumis({ utilisateurID : reponse.utilisateurID });
+
+      await doc.save();
+
     //Mail
         await transporter.sendMail({
           from: '"The Coast USA" <admin@thecoastusa.com>',
@@ -415,7 +420,8 @@ exports.validerReponses = async (req, res) => {
           html: `
               <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
               <p>L'administration a validé vos réponses au questionnaire soumis précédemment !</p>
-              <p>Votre profil est complet ! Bienvenue au programme !</p>`
+              <p>La prochaine étape consiste à fournir des documents</p>
+              <p>Vous pouvez vous connecter et vous rendre dans la partie "Documents" pour poursuivre la composition de votre dossier.</p>`
       });
     }
 
