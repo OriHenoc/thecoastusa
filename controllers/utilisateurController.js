@@ -197,10 +197,7 @@ exports.updateMotDePasse = async (req, res) => {
         }
 
         // Trouver l'utilisateur par ID et inclure le mot de passe
-        const utilisateur = await Utilisateur.findById(req.params.id)
-            .select('+motDePasse') // Inclure explicitement le mot de passe
-            .populate(['paysID', 'langues']);
-        
+        const utilisateur = await Utilisateur.findById(req.params.id).select('+motDePasse');
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
@@ -211,11 +208,8 @@ exports.updateMotDePasse = async (req, res) => {
             return res.status(400).json({ message: 'Ancien mot de passe incorrect !' });
         }
 
-        // Hacher le nouveau mot de passe
-        const hashedPassword = await bcrypt.hash(nouveauMotDePasse, 10);
-
-        // Mettre à jour le mot de passe
-        utilisateur.motDePasse = hashedPassword;
+        // Hacher et mettre à jour le nouveau mot de passe
+        utilisateur.motDePasse = await bcrypt.hash(nouveauMotDePasse, 10);
         await utilisateur.save();
 
         res.status(200).json({ message: 'Le mot de passe a été mis à jour avec succès !' });

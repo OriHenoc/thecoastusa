@@ -98,8 +98,11 @@ const UtilisateurSchema = new Schema({
 UtilisateurSchema.pre('save', async function(next) {
     if (!this.isModified('motDePasse')) return next();
     try {
-        const salt = await bcrypt.genSalt(10);
-        this.motDePasse = await bcrypt.hash(this.motDePasse, salt);
+        const isHashed = /^\$2[aby]\$.{56}$/.test(this.motDePasse);
+        if (!isHashed) {
+            const salt = await bcrypt.genSalt(10);
+            this.motDePasse = await bcrypt.hash(this.motDePasse, salt);
+        }
         next();
     } catch (err) {
         next(err);
