@@ -196,28 +196,31 @@ exports.updateMotDePasse = async (req, res) => {
             return res.status(400).json({ message: 'Ancien mot de passe et nouveau mot de passe sont requis.' });
         }
 
-        // Trouver l'utilisateur par ID
-        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
+        // Trouver l'utilisateur par ID et inclure le mot de passe
+        const utilisateur = await Utilisateur.findById(req.params.id)
+            .select('+motDePasse') // Inclure explicitement le mot de passe
+            .populate(['paysID', 'langues']);
+        
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
 
         // Vérifier l'ancien mot de passe
         const isMatch = await bcrypt.compare(ancienMotDePasse, utilisateur.motDePasse);
-        
         if (!isMatch) {
-            return res.status(400).json({ message : 'Ancien mot de passe incorrect !' });
+            return res.status(400).json({ message: 'Ancien mot de passe incorrect !' });
         }
-        else{
-            // Mettre à jour le mot de passe
-            utilisateur.motDePasse = nouveauMotDePasse;
-            await utilisateur.save();
 
-            res.status(200).json({
-                message: 'Le mot de passe a été mis à jour !'
-            });
-        }
+        // Hacher le nouveau mot de passe
+        const hashedPassword = await bcrypt.hash(nouveauMotDePasse, 10);
+
+        // Mettre à jour le mot de passe
+        utilisateur.motDePasse = hashedPassword;
+        await utilisateur.save();
+
+        res.status(200).json({ message: 'Le mot de passe a été mis à jour avec succès !' });
     } catch (error) {
+        console.error('Erreur lors de la mise à jour du mot de passe :', error);
         res.status(400).json({
             message: 'Mauvaise requête !',
             erreur: error.message
