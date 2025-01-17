@@ -20,6 +20,9 @@ function generateRandomPassword(length = 8) {
     return password;
 }
 
+const RESET_PASSWORD_SECRET = process.env.JWT_SECRET || '@THE_COAST_USA%';
+const REINITIALISATION_URL = 'http://localhost:8080';
+
 // Configuration du transporteur avec le serveur SMTP
 const transporter = nodemailer.createTransport({
     host: 'mail.thecoastusa.com',
@@ -239,80 +242,6 @@ exports.deleteUtilisateur = async (req, res) => {
     }
 };
 
-// Activer/Désactiver un utilisateur
-exports.toggleUtilisateurStatus = async (req, res) => {
-    try {
-        const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
-        if (!utilisateur) {
-            return res.status(404).json({ message: 'Utilisateur non trouvé' });
-        }
-        utilisateur.compteActif = !utilisateur.compteActif;
-        await utilisateur.save();
-        let message = `Le statut a été mis à jour !`
-        let statut = utilisateur.compteActif;
-        if(statut){
-            message = `Le compte de ${utilisateur.nom} ${utilisateur.prenoms} a été activé !`
-        }
-        else{
-            message = `Le compte de ${utilisateur.nom} ${utilisateur.prenoms} a été désactivé !`
-        }
-        res.status(200).json({
-            message : message,
-            utilisateur : utilisateur
-        });
-    } catch (error) {
-        res.status(400).json({
-            message : 'Mauvaise requête !',
-            erreur : error.message
-        });
-    }
-};
-
-// // Télécharger une photo de profil
-// exports.uploadPhotoProfil = async (req, res) => {
-//     try {
-//         const utilisateur = await Utilisateur.findById(req.params.id);
-//         if (!utilisateur) {
-//             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
-//         }
-        
-//         // Supprimer l'ancienne photo si elle existe
-//         if (utilisateur.photoDeProfil) {
-//             const oldPhotoPath = path.resolve(__dirname, '..', 'uploads/images/profils', path.basename(utilisateur.photoDeProfil));
-            
-//             try {
-//                 const fileExists = await fs.pathExists(oldPhotoPath);
-//                 if (fileExists) {
-//                     await fs.remove(oldPhotoPath);
-//                     console.log('Ancienne photo supprimée avec succès');
-//                 } else {
-//                     console.log('Ancienne photo non trouvée');
-//                 }
-//             } catch (err) {
-//                 console.error('Erreur lors de la suppression de l\'ancienne photo :', err);
-//             }
-//         } else {
-//             console.log('Aucune ancienne photo à supprimer');
-//         }
-
-//         // Mettre à jour la photo de profil
-//         utilisateur.photoDeProfil = `/uploads/images/profils/${req.file.filename}`;
-//         await utilisateur.save();
-
-//         res.status(200).json({
-//             message: 'La photo de profil a été mise à jour !',
-//             utilisateur: utilisateur
-//         });
-
-//     } catch (error) {
-//         res.status(400).json({
-//             message: 'Mauvaise requête !',
-//             erreur: error.message
-//         });
-//     }
-// };
-
-// Télécharger une photo de profil en utilisant un script PHP pour le stockage
 exports.uploadPhotoProfil = async (req, res) => {
     try {
         const utilisateur = await Utilisateur.findById(req.params.id).populate(['paysID', 'langues']);
@@ -519,3 +448,65 @@ exports.toggleCompteActif = async (req, res) => {
         });
     }
 };
+
+exports.resetPasswordRequest = async (req, res) => {
+    const { email } = req.body;
+  
+    try {
+      // Vérifie si un utilisateur existe avec cet email
+      const utilisateur = await Utilisateur.findOne({ email });
+      if (!utilisateur) {
+        return res.status(404).json({ message: "Utilisateur introuvable." });
+      }
+  
+      // Génère un token sécurisé qui expire
+      const token = jwt.sign({ userId: user._id }, RESET_PASSWORD_SECRET, { expiresIn: '1h' });
+  
+      // URL de réinitialisation
+      const resetUrl = `${FRONTEND_URL}/reinitialisation?token=${token}`;
+  
+      await transporter.sendMail({
+        from: '"The Coast USA" <admin@thecoastusa.com>',
+        to: email,
+        subject: "Réinitialisation du mot de passe",
+        html: `
+            <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+            <p>Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le lien ci-dessous pour procéder :</p><br>
+            
+            <a href="${resetUrl}" target="_blank">Réinitialiser le mot de passe</a><br>
+            <p>Ce lien expirera dans 1 heure.</p>
+            <p>Si vous n'avez pas fait cette demande, veuillez ignorer cet email.</p>
+        `
+    });
+  
+      return res.status(200).json({ message: "Email de réinitialisation envoyé avec succès. \nVeuillez consulter votre email !" });
+    } catch (error) {
+      console.error('Erreur lors de la demande de réinitialisation :', error);
+      return res.status(500).json({ message: "Erreur serveur. Veuillez réessayer plus tard." });
+    }
+  };
+  
+
+  exports.updatePwdReinit = async (req, res) => {
+
+    const { token, newPassword } = req.body;
+  
+    try {
+      // Vérifie le token
+      const decoded = jwt.verify(token, RESET_PASSWORD_SECRET);
+      const utilisateur = await Utilisateur.findById(decoded.userId);
+  
+      if (!utilisateur) {
+        return res.status(404).json({ message: "Utilisateur introuvable." });
+      }
+  
+      // Met à jour le mot de passe
+      utilisateur.motDePasse = await bcrypt.hash(newPassword, 10); // Hache le mot de passe
+      await utilisateur.save();
+  
+      return res.status(200).json({ message: "Mot de passe mis à jour avec succès." });
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du mot de passe :", error);
+      return res.status(400).json({ message: "Lien invalide ou expiré." });
+    }
+  };
