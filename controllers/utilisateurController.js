@@ -461,10 +461,10 @@ exports.resetPasswordRequest = async (req, res) => {
       }
   
       // Génère un token sécurisé qui expire
-      const token = jwt.sign({ userId: user._id }, RESET_PASSWORD_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ userId: utilisateur._id }, RESET_PASSWORD_SECRET, { expiresIn: '1h' });
   
       // URL de réinitialisation
-      const resetUrl = `${FRONTEND_URL}/reinitialisation?token=${token}`;
+      const resetUrl = `${REINITIALISATION_URL}/reinitialisation?token=${token}`;
   
       await transporter.sendMail({
         from: '"The Coast USA" <admin@thecoastusa.com>',
