@@ -22,7 +22,7 @@ function generateRandomPassword(length = 8) {
 }
 
 const RESET_PASSWORD_SECRET = process.env.JWT_SECRET || '@THE_COAST_USA%';
-const REINITIALISATION_URL = 'http://localhost:8080';
+const REINITIALISATION_URL = 'https://thecoastusa.com';
 
 // Configuration du transporteur avec le serveur SMTP
 const transporter = nodemailer.createTransport({
@@ -166,10 +166,10 @@ exports.updateInfosUtilisateur = async (req, res) => {
 
 exports.updateInfosUtilisateurPlus = async (req, res) => {
     try {
-        const { biographie, experience, paysID } = req.body;
+        const { biographie, experience, videoDePresentation } = req.body;
         const utilisateur = await Utilisateur.findByIdAndUpdate(
             req.params.id,
-            { biographie, experience, paysID },
+            { biographie, experience, videoDePresentation },
             { new: true, runValidators: true }
         ).populate(['paysID', 'langues']);
 
@@ -483,7 +483,7 @@ exports.resetPasswordRequest = async (req, res) => {
       return res.status(200).json({ message: "Email de réinitialisation envoyé avec succès. \nVeuillez consulter votre email !" });
     } catch (error) {
       console.error('Erreur lors de la demande de réinitialisation :', error);
-      return res.status(500).json({ message: `Erreur serveur. Veuillez réessayer plus tard.\n ${error}` });
+      return res.status(500).json({ message: 'Erreur serveur. Veuillez réessayer plus tard.' });
     }
   };
   
