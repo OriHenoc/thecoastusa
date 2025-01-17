@@ -8,6 +8,7 @@ require('dotenv').config();
 const axios = require('axios');
 const FormData = require('form-data');
 const Contrat = require('../models/Contrat');
+const jwt = require('jsonwebtoken');
 
 // Fonction pour générer un mot de passe aléatoire
 function generateRandomPassword(length = 8) {
@@ -482,7 +483,7 @@ exports.resetPasswordRequest = async (req, res) => {
       return res.status(200).json({ message: "Email de réinitialisation envoyé avec succès. \nVeuillez consulter votre email !" });
     } catch (error) {
       console.error('Erreur lors de la demande de réinitialisation :', error);
-      return res.status(500).json({ message: `Erreur serveur. Veuillez réessayer plus tard. \n ${error}` });
+      return res.status(500).json({ message: `Erreur serveur. Veuillez réessayer plus tard.` });
     }
   };
   
