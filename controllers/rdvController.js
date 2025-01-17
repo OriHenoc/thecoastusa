@@ -159,7 +159,7 @@ exports.updateRdvStatus = async (req, res) => {
             subject: `Rendez-vous ${etat}`,
             html: `
                 <h2>Hello ${famille.nom} ${famille.prenoms},</h2>
-                <p>Votre demande de rendez-vous avec ${fille.nom} ${fille.prenoms} a été ${etat}.</p>
+                <p>Votre demande de rendez-vous avec ${fille.nom} ${fille.prenoms} a été ${etat}e.</p>
                 <p>
                     ${commentaire}
                 </p>
