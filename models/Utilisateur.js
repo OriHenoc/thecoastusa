@@ -90,6 +90,9 @@ const UtilisateurSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PhotosFamille',
     }],
+    numerosUrgence: {
+        type: String
+    },
 }, {
     timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }
 });
