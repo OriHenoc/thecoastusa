@@ -21,6 +21,7 @@ const contratRoute = require('./contrat');
 const formationRoute = require('./formation');
 const examenRoute = require('./examen');
 const rdvRoute = require('./rdv');
+const favorisRoute = require('./favoris');
 
 router.use('/auth', authRoute);
 router.use('/pays', paysRoute);
@@ -42,5 +43,6 @@ router.use('/contrat', contratRoute);
 router.use('/formation', formationRoute);
 router.use('/examen', examenRoute);
 router.use('/rdv', rdvRoute);
+router.use('/favoris', favorisRoute);
 
 module.exports = router;
