@@ -99,18 +99,34 @@ exports.confirmPaiementStatus = async (req, res) => {
         utilisateur.compteActif = true
         await utilisateur.save();
 
-        await transporter.sendMail({
-            from: '"The Coast USA" <admin@thecoastusa.com>',
-            to: utilisateur.email,
-            subject: "Paiement confirmé",
-            html: `
-                <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
-                <p>Votre inscription au programme a été validée !</p>
-                <p>Vous pouvez désormais vous connecter à votre espace pour la suite du processus avec vos identifiants :</p>
-                <ul><li>Email : ${utilisateur.email}</li><li>Mot de passe : celui que vous avez utilisé lors de votre inscription</li></ul>
-                <p><a href="https://thecoastusa.com/connexion">JE ME CONNECTE ICI</a></p>
-            `
-        });
+        if(utilisateur.role == 'fille'){
+            await transporter.sendMail({
+                from: '"The Coast USA" <admin@thecoastusa.com>',
+                to: utilisateur.email,
+                subject: "Paiement confirmé",
+                html: `
+                    <h2>Bonjour ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                    <p>Félicitations pour ton inscription !</p>
+                    <p>Nous sommes ravis de t'accueillir et espérons que cette aventure t'aidera à réaliser ton rêve américain. Que tu fasses de nombreux matchs avec des familles formidables et que tu vives une expérience inoubliable !</p>
+                    <p>Nous sommes là pour te guider à chaque étape. Bonne chance !</p>
+                    <p>Cordialement, L'équipe The Coast</p>
+                `
+            });
+        }
+        else{
+            await transporter.sendMail({
+                from: '"The Coast USA" <admin@thecoastusa.com>',
+                to: utilisateur.email,
+                subject: "Paiement confirmé",
+                html: `
+                    <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                    <p>Votre inscription au programme a été validée !</p>
+                    <p>Vous pouvez désormais vous connecter à votre espace pour la suite du processus avec vos identifiants :</p>
+                    <ul><li>Email : ${utilisateur.email}</li><li>Mot de passe : celui que vous avez utilisé lors de votre inscription</li></ul>
+                    <p><a href="https://thecoastusa.com/connexion">JE ME CONNECTE ICI</a></p>
+                `
+            });
+        }
 
         let message = `Le paiement a été confirmé ! `
         res.status(200).json({

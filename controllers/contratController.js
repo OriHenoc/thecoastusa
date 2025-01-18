@@ -169,10 +169,16 @@ exports.updateValidationStatus = async (req, res) => {
         const subject = isValid ? "Contrat Validé" : "Contrat Refusé";
         const message = isValid
             ? `
-                <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
-                <p>Votre contrat a été validé et vous êtes officiellement des nôtres !</p>
-                <p>Veuillez suivre les formations et passer les tests pour vous préparer aux mises en relation.</p>
-                <p>Vous pouvez vous connecter et aller à la rubrique "Formations et Tests" pour procéder.</p>
+                <h2>Bonjour ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                <p>Nous souhaitons vous rappeler qu'il est important de ne pas prendre de décisions qui pourrait entraver votre situation actuelle avant d'avoir des garanties solides.</p>
+                <p>Veuillez noter que :</p>
+                <ul>
+                    <li>* Le visa dépend uniquement de la décision de l'agent consulaire et ne peut pas être garanti.</li>
+                    <li>* Le match avec une famille repose sur la décision finale de la famille, ce qui échappe à notre contrôle.</li>
+                </ul>
+                <p>Nous mettons tout en œuvre pour vous accompagner dans le processus, mais certains aspects ne dépendent pas de nous. Nous vous conseillons donc de prendre des décisions prudentes et réfléchies en tenant compte de ces éléments.</p>
+                <p>N'hésitez pas à nous contacter pour toute question ou préoccupation.</p>
+                <p>Cordialement, L'équipe The Coast.</p>
             `
             : `
                 <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
@@ -261,6 +267,20 @@ exports.soumettreContrat = async (req, res) => {
                 <p>Veuillez vous connecter pour valider si vous l'avez bien reçu.</p>
                 <hr/>
                 <p>Signé : Votre IA adorée</p>
+            `
+        });
+
+        //mail au concerné :
+
+        await transporter.sendMail({
+            from: '"The Coast USA" <admin@thecoastusa.com>',
+            to: utilisateur.email,
+            subject: "Contrat soumis",
+            html: `
+                <h2>Bonjour ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                <p>Nous confirmons avoir reçu votre document et procéderons à sa vérification. Veuillez noter que si des informations fournies s'avèrent fausses, cela entraînera votre retrait définitif du programme.</p>
+                <p>Merci pour votre collaboration et votre sérieux.</p>
+                <p>Cordialement , l'équipe the COAST</p>
             `
         });
 

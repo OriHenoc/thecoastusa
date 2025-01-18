@@ -150,6 +150,21 @@ exports.soumettreDocument = async (req, res) => {
                 `
             });
 
+
+            //mail au concerné :
+
+            await transporter.sendMail({
+                from: '"The Coast USA" <admin@thecoastusa.com>',
+                to: utilisateur.email,
+                subject: "Document soumis",
+                html: `
+                    <h2>Bonjour ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                    <p>Nous confirmons avoir reçu vos documents et procéderons à leur vérification. Veuillez noter que si des informations fournies s'avèrent fausses, cela entraînera votre retrait définitif du programme.</p>
+                    <p>Merci pour votre collaboration et votre sérieux.</p>
+                    <p>Cordialement , l'équipe the COAST</p>
+                `
+            });
+
         res.status(201).json({
             message: "Document envoyé avec succès.",
             docs,

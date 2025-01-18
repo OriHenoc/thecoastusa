@@ -485,10 +485,10 @@ exports.resetPasswordRequest = async (req, res) => {
       console.error('Erreur lors de la demande de réinitialisation :', error);
       return res.status(500).json({ message: 'Erreur serveur. Veuillez réessayer plus tard.' });
     }
-  };
+};
   
 
-  exports.updatePwdReinit = async (req, res) => {
+exports.updatePwdReinit = async (req, res) => {
 
     const { token, newPassword } = req.body;
   
@@ -510,4 +510,4 @@ exports.resetPasswordRequest = async (req, res) => {
       console.error("Erreur lors de la mise à jour du mot de passe :", error);
       return res.status(400).json({ message: "Lien invalide ou expiré." });
     }
-  };
+};
