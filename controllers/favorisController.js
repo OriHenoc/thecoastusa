@@ -16,31 +16,39 @@ const transporter = nodemailer.createTransport({
         rejectUnauthorized: false
     }
 });
-
 exports.putFavoris = async (req, res) => {
     try {
         const { familleID, filleID } = req.body;
-        const existingFavoris = await Favoris.findOne({ $and: [{ familleID }, { filleID }] });
-        if (existingFavoris) {
-            return res.status(400).json({ message: 'Fille déjà en favori.' });
-        }
-        else{
-            const newFavoris = new Favoris({ familleID, filleID });
 
-        await newFavoris.save();
+        // Vérifier les champs requis
+        if (!familleID || !filleID) {
+            return res.status(400).json({ message: 'familleID et filleID sont requis.' });
+        }
+
+        // Utiliser l'option `findOneAndUpdate` pour insérer si non existant
+        const newFavoris = await Favoris.findOneAndUpdate(
+            { familleID, filleID }, // Condition pour trouver un favori existant
+            { familleID, filleID }, // Données à insérer/mettre à jour
+            { upsert: true, new: true, setDefaultsOnInsert: true } // Options pour créer si non existant
+        );
 
         res.status(201).json({
-            message : `Ajoutée aux favorites !`,
-            favori : newFavoris
+            message: 'Ajoutée aux favorites !',
+            favori: newFavoris,
         });
-        }
     } catch (error) {
+        if (error.code === 11000) {
+            // Gérer les erreurs liées à l'index unique
+            return res.status(400).json({ message: 'Fille déjà en favori.' });
+        }
+
         res.status(400).json({
-            message : 'Une erreur est survenue !',
-            erreur : error.message
+            message: 'Une erreur est survenue !',
+            erreur: error.message,
         });
     }
 };
+
 
 exports.getAllFavoris = async (req, res) => {
     try {
