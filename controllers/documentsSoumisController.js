@@ -110,6 +110,8 @@ exports.soumettreDocument = async (req, res) => {
             certificatResidence: 'certificatResidence',
             casierJudiciaire: 'casierJudiciaire',
             bilanSante: 'bilanSante',
+            verificationOfEmployment: 'verificationOfEmployment',
+            proofOfResidence: 'proofOfResidence',
             pieceIdentite: 'pieceIdentite',
         };
         
@@ -179,6 +181,8 @@ exports.annulerDocumentSoumis = async (req, res) => {
             'certificatResidence',
             'casierJudiciaire',
             'bilanSante',
+            'verificationOfEmployment',
+            'proofOfResidence',
             'pieceIdentite',
         ];
 
@@ -227,6 +231,14 @@ exports.annulerDocumentSoumis = async (req, res) => {
 
             case "bilanSante":
                 doc = "Bilan de santé"
+                break;
+
+            case "verificationOfEmployment":
+                doc = "Verification Of Employment"
+                break;
+
+            case "proofOfResidence":
+                doc = "Proof Of Residence"
                 break;
 
             case "pieceIdentite":
