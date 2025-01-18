@@ -1,6 +1,5 @@
 const Utilisateur = require('../models/Utilisateur')
 const nodemailer = require('nodemailer');
-const Rdv = require('../models/Rdv');
 const Favoris = require('../models/Favoris');
 require('dotenv').config();
 
@@ -68,7 +67,7 @@ exports.getAllFavoris = async (req, res) => {
 
 exports.getFavorisById = async (req, res) => {
     try {
-        const fav = await Rdv.findById(req.params.id).populate(['familleID', 'filleID']);
+        const fav = await Favoris.findById(req.params.id).populate(['familleID', 'filleID']);
         if (!fav) return res.status(404).json('Favori non trouvé !');
         res.status(200).json({
             favoris : fav
@@ -83,7 +82,7 @@ exports.getFavorisById = async (req, res) => {
 
 exports.getFavorisByFamilleId = async (req, res) => {
     try {
-        const fav = await Rdv.find({familleID : req.params.id}).populate(['familleID', 'filleID']);
+        const fav = await Favoris.find({familleID : req.params.id}).populate(['familleID', 'filleID']);
         if (!fav) return res.status(404).json('Favoris non trouvé !');
         res.status(200).json({
             favoris : fav
@@ -98,7 +97,7 @@ exports.getFavorisByFamilleId = async (req, res) => {
 
 exports.getFavorisByFilleId = async (req, res) => {
     try {
-        const fav = await Rdv.find({filleID : req.params.id}).populate(['familleID', 'filleID']);
+        const fav = await Favoris.find({filleID : req.params.id}).populate(['familleID', 'filleID']);
         if (!fav) return res.status(404).json('Favoris non trouvé !');
         res.status(200).json({
             favoris : fav
@@ -110,6 +109,29 @@ exports.getFavorisByFilleId = async (req, res) => {
         });
     }
 };
+
+exports.getIsFavori = async (req, res) => {
+    try {
+        const { familleID, filleID } = req.body;
+
+        // Vérifier les champs requis
+        if (!familleID || !filleID) {
+            return res.status(400).json({ message: 'familleID et filleID sont requis.' });
+        }
+
+        const fav = await Favoris.find({filleID : filleID, familleID : familleID}).populate(['familleID', 'filleID']);
+        if (!fav) return res.status(404).json('Favoris non trouvé !');
+        res.status(200).json({
+            favoris : fav
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Mauvaise requête !',
+            erreur : error.message
+        });
+    }
+};
+
 
 exports.deleteFavoris = async (req, res) => {
     try {
