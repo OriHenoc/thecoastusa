@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.get('/byFille/:id', getFavorisByFilleId);
 router.get('/byFamille/:id', getFavorisByFamilleId);
-router.get('/isFavori', getIsFavori);
+router.post('/isFavori', getIsFavori);
 router.delete('/:id', deleteFavoris);
 
 router.post('/', putFavoris);
