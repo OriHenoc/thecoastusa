@@ -20,13 +20,20 @@ const transporter = nodemailer.createTransport({
 exports.putFavoris = async (req, res) => {
     try {
         const { familleID, filleID } = req.body;
-        const newFavoris = new Favoris({ familleID, filleID });
+        const existingFavoris = await Favoris.findOne({ $and: [{ familleID }, { filleID }] });
+        if (existingFavoris) {
+            return res.status(400).json({ message: 'Fille déjà en favori.' });
+        }
+        else{
+            const newFavoris = new Favoris({ familleID, filleID });
+
         await newFavoris.save();
 
         res.status(201).json({
             message : `Ajoutée aux favorites !`,
             favori : newFavoris
         });
+        }
     } catch (error) {
         res.status(400).json({
             message : 'Une erreur est survenue !',
