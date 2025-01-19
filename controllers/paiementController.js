@@ -157,7 +157,7 @@ exports.refuserPaiement = async (req, res) => {
             html: `
                 <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
                 <p>La preuve de paiement que vous avez soumis n'est pas valide</p>
-                <p> Veuillez la resoumettre !</p>
+                <p> Veuillez vous réinscrire et la resoumettre !</p>
             `
         });
 
