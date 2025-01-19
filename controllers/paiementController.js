@@ -161,16 +161,17 @@ exports.refuserPaiement = async (req, res) => {
             `
         });
 
-        
+        const deletedUtilisateur = await Utilisateur.findByIdAndDelete(paiement.utilisateurID);
         const deletedPaiement = await Paiement.findByIdAndDelete(req.params.id);
-        if (!deletedPaiement) return res.status(404).json('Examen non trouvé !');
+        if (!deletedPaiement) return res.status(404).json('Paiement non trouvé !');
 
     
         let message = `La preuve de paiement a été refusée ! `
         res.status(200).json({
             success: true,
             message : message,
-            deletedPaiement : deletedPaiement
+            deletedPaiement : deletedPaiement,
+            deletedUtilisateur : deletedUtilisateur
         });
     } catch (error) {
         res.status(400).json({
