@@ -155,9 +155,12 @@ exports.refuserPaiement = async (req, res) => {
             to: utilisateur.email,
             subject: "Preuve de paiement à resoumettre",
             html: `
-                <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
-                <p>La preuve de paiement que vous avez soumis n'est pas valide</p>
-                <p> Veuillez vous réinscrire et la resoumettre !</p>
+                <h2>Bonjour ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                <p>Nous vous informons que votre paiement a été refusé.</p>
+                <p>Nous vous invitons à vous réinscrire sur le site et à soumettre un autre paiement dès que possible.</p>
+                <p>Si vous rencontrez un problème ou avez besoin d'assistance, n'hésitez pas à consulter les informations disponibles sur le site ou à nous contacter.</p>
+                <p>Merci pour votre compréhension.</p>
+                <p>Cordialement, The Coast.</p>
             `
         });
 
