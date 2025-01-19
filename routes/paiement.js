@@ -6,7 +6,8 @@ const {
     getAllPaiement,
     getAllConfirmedPaiement,
     getPaiementById,
-    confirmPaiementStatus
+    confirmPaiementStatus,
+    refuserPaiement
 } = require('../controllers/paiementController');
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.get('/', getAllPaiement);
 router.get('/confirmes', getAllConfirmedPaiement);
 router.get('/:id', getPaiementById);
 router.patch('/:id/confirmer', confirmPaiementStatus);
+router.patch('/:id/refuser', refuserPaiement);
 
 module.exports = router;

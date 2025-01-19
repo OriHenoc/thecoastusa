@@ -141,6 +141,46 @@ exports.confirmPaiementStatus = async (req, res) => {
     }
 };
 
+
+exports.refuserPaiement = async (req, res) => {
+    try {
+        const paiement = await Paiement.findById(req.params.id);
+        if (!paiement) return res.status(404).json('Paiement non trouvé !');
+
+        const utilisateur = await Utilisateur.findById(paiement.utilisateurID);
+
+        //Mail à l'inscrit(e)
+        await transporter.sendMail({
+            from: '"The Coast USA" <admin@thecoastusa.com>',
+            to: utilisateur.email,
+            subject: "Preuve de paiement à resoumettre",
+            html: `
+                <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                <p>La preuve de paiement que vous avez soumis n'est pas valide</p>
+                <p> Veuillez la resoumettre !</p>
+            `
+        });
+
+        
+        const deletedPaiement = await Paiement.findByIdAndDelete(req.params.id);
+        if (!deletedPaiement) return res.status(404).json('Examen non trouvé !');
+
+    
+        let message = `La preuve de paiement a été refusée ! `
+        res.status(200).json({
+            success: true,
+            message : message,
+            deletedPaiement : deletedPaiement
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message : 'Mauvaise requête !',
+            erreur : error.message
+        });
+    }
+};
+
 // exports.uploadPreuve = async (req, res) => {
 //     try {
 //         const paiement = await Paiement.findById(req.params.id);
