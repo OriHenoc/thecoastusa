@@ -54,7 +54,7 @@ const UtilisateurSchema = new Schema({
     },
     compteActif: {
         type: Boolean,
-        default: false
+        default: true
     },
     visible: {
         type: Boolean,

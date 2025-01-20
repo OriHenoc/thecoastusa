@@ -84,6 +84,27 @@ exports.getPaiementById = async (req, res) => {
     }
 };
 
+exports.getPaiementByUtilisateur = async (req, res) => {
+    try {
+        const paiement = await Paiement.findOne({ utilisateurID : req.params.id }).populate('utilisateurID')
+  
+        if (!paiement) {
+            return res.status(404).json({ message: 'Aucun paiement trouvé pour cet utilisateur.' });
+        }
+    
+        res.status(200).json({
+            message: 'Paiement récupéré avec succès.',
+            paiement: paiement,
+        });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: 'Une erreur est survenue lors de la récupération de paiement.',
+        erreur: error.message,
+      });
+    }
+};
+
 exports.confirmPaiementStatus = async (req, res) => {
     try {
         const paiement = await Paiement.findById(req.params.id);
@@ -96,8 +117,8 @@ exports.confirmPaiementStatus = async (req, res) => {
 
         const utilisateur = await Utilisateur.findById(paiement.utilisateurID);
 
-        utilisateur.compteActif = true
-        await utilisateur.save();
+        // utilisateur.compteActif = true
+        // await utilisateur.save();
 
         if(utilisateur.role == 'fille'){
             await transporter.sendMail({
@@ -164,17 +185,15 @@ exports.refuserPaiement = async (req, res) => {
             `
         });
 
-        const deletedUtilisateur = await Utilisateur.findByIdAndDelete(paiement.utilisateurID);
+        const deletedUtilisateur = await Utilisateur.findByIdAndDelete(utilisateur.utilisateurID);
         const deletedPaiement = await Paiement.findByIdAndDelete(req.params.id);
-        if (!deletedPaiement) return res.status(404).json('Paiement non trouvé !');
+        if (!deletedPaiement && !deletedUtilisateur) return res.status(404).json('Echec de suppression du compte ! Veuillez le faire manuellement !');
 
     
         let message = `La preuve de paiement a été refusée ! `
         res.status(200).json({
             success: true,
-            message : message,
-            deletedPaiement : deletedPaiement,
-            deletedUtilisateur : deletedUtilisateur
+            message : message
         });
     } catch (error) {
         res.status(400).json({

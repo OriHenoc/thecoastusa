@@ -7,11 +7,13 @@ const {
     getAllConfirmedPaiement,
     getPaiementById,
     confirmPaiementStatus,
-    refuserPaiement
+    refuserPaiement,
+    getPaiementByUtilisateur
 } = require('../controllers/paiementController');
 
 const router = express.Router();
 router.post('/soumission', upload.single('preuve'), soumettrePaiement);
+router.get('/byUtilisateur/:id', getPaiementByUtilisateur);
 router.get('/', getAllPaiement);
 router.get('/confirmes', getAllConfirmedPaiement);
 router.get('/:id', getPaiementById);
