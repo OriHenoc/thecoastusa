@@ -178,16 +178,15 @@ exports.refuserPaiement = async (req, res) => {
             html: `
                 <h2>Bonjour ${utilisateur.nom} ${utilisateur.prenoms},</h2>
                 <p>Nous vous informons que votre paiement a été refusé.</p>
-                <p>Nous vous invitons à vous réinscrire sur le site et à soumettre un autre paiement dès que possible.</p>
+                <p>Nous vous invitons à vous reconnecter sur le site et à soumettre un autre paiement dès que possible.</p>
                 <p>Si vous rencontrez un problème ou avez besoin d'assistance, n'hésitez pas à consulter les informations disponibles sur le site ou à nous contacter.</p>
                 <p>Merci pour votre compréhension.</p>
                 <p>Cordialement, The Coast.</p>
             `
         });
 
-        const deletedUtilisateur = await Utilisateur.findByIdAndDelete(utilisateur.utilisateurID);
         const deletedPaiement = await Paiement.findByIdAndDelete(req.params.id);
-        if (!deletedPaiement && !deletedUtilisateur) return res.status(404).json('Echec de suppression du compte ! Veuillez le faire manuellement !');
+        if (!deletedPaiement) return res.status(404).json('Echec de suppression du paiement !');
 
     
         let message = `La preuve de paiement a été refusée ! `
