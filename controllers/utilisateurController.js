@@ -458,11 +458,14 @@ exports.changeRole = async (req, res) => {
 
         if(utilisateur.role == 'fille'){
             utilisateur.role = 'famille';
-        } 
-
-        if(utilisateur.role == 'famille'){
-            utilisateur.role = 'fille';
         }
+        else{
+            if(utilisateur.role == 'famille'){
+                utilisateur.role = 'fille';
+            }
+        }
+
+        
 
         await utilisateur.save();
         let message = `Le rôle de l'utilisateur a été changé ! `
