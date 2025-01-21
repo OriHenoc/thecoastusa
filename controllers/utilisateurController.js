@@ -369,13 +369,14 @@ exports.addLangues = async (req, res) => {
             return res.status(400).json({ success: false, message: "Langue invalide !" });
         }
 
+        // Récupérer l'utilisateur avec les langues peuplées
         const utilisateur = await Utilisateur.findById(utilisateurID).populate(['paysID', 'langues']);
         if (!utilisateur) {
             return res.status(404).json({ message: 'Utilisateur non trouvé !' });
         }
 
-        // Vérification correcte si la langue existe déjà
-        const langueExiste = utilisateur.langues.some(l => l.toString() === langue.toString());
+        // Vérification stricte si la langue existe déjà
+        const langueExiste = utilisateur.langues.some(l => l._id.toString() === langue.toString());
         if (langueExiste) {
             return res.status(400).json({ success: false, message: "La langue existe déjà !" });
         }
@@ -450,6 +451,34 @@ exports.toggleCompteActif = async (req, res) => {
     }
 };
 
+exports.changeRole = async (req, res) => {
+    try {
+        const utilisateur = await Utilisateur.findById(req.params.id);
+        if (!utilisateur) return res.status(404).json('Utilisateur non trouvé !');
+
+        if(utilisateur.role == 'fille'){
+            utilisateur.role = 'famille';
+        } 
+
+        if(utilisateur.role == 'famille'){
+            utilisateur.role = 'fille';
+        }
+
+        await utilisateur.save();
+        let message = `Le rôle de l'utilisateur a été changé ! `
+        res.status(200).json({
+            message : message,
+            utilisateur : utilisateur
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Mauvaise requête !',
+            erreur : error.message
+        });
+    }
+};
+
+
 exports.resetPasswordRequest = async (req, res) => {
     const { email } = req.body;
   
@@ -509,5 +538,40 @@ exports.updatePwdReinit = async (req, res) => {
     } catch (error) {
       console.error("Erreur lors de la mise à jour du mot de passe :", error);
       return res.status(400).json({ message: "Lien invalide ou expiré." });
+    }
+};
+
+exports.removeLangue = async (req, res) => {
+    try {
+        const { langue, utilisateurID } = req.body;
+
+        if (!langue) {
+            return res.status(400).json({ success: false, message: "Langue invalide !" });
+        }
+
+        const utilisateur = await Utilisateur.findById(utilisateurID).populate(['paysID', 'langues']);
+        if (!utilisateur) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé !' });
+        }
+
+        // Recherche de l'index de la langue à supprimer
+        const index = utilisateur.langues.findIndex(l => l._id.toString() === langue.toString());
+        if (index === -1) {
+            return res.status(400).json({ success: false, message: "La langue n'existe pas dans la liste de l'utilisateur !" });
+        }
+
+        // Suppression de la langue
+        utilisateur.langues.splice(index, 1);
+        await utilisateur.save();
+
+        res.status(200).json({
+            message: 'Langue supprimée avec succès !',
+            utilisateur: utilisateur
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: "Une erreur est survenue lors de la suppression de la langue.",
+            erreur: error.message
+        });
     }
 };

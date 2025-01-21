@@ -18,13 +18,16 @@ const {
     updateVisibility,
     toggleCompteActif,
     resetPasswordRequest,
-    updatePwdReinit
+    updatePwdReinit,
+    removeLangue,
+    changeRole
 } = require('../controllers/utilisateurController');
 
 const router = express.Router();
 
 
 router.post('/addLangue', addLangues);
+router.post('/removeLangue', removeLangue);
 router.get('/fillesToShow', getFillesToShow);
 router.get('/filles', getAllFilles);
 router.get('/familles', getAllFamilles);
@@ -38,6 +41,7 @@ router.put('/:id/updateInfos', authMiddleware, updateInfosUtilisateur);
 router.put('/:id/updateInfos2', authMiddleware, updateInfosUtilisateurPlus);
 router.put('/:id/updateMotDePasse', authMiddleware, updateMotDePasse);
 router.delete('/:id', authMiddleware, deleteUtilisateur);
+router.patch('/:id/changeRole', authMiddleware, changeRole);
 router.patch('/:id/updateVisibility', authMiddleware, updateVisibility);
 router.patch('/:id/toggleCompteActif', authMiddleware, toggleCompteActif);
 
