@@ -465,8 +465,6 @@ exports.changeRole = async (req, res) => {
             }
         }
 
-        
-
         await utilisateur.save();
         let message = `Le rôle de l'utilisateur a été changé ! `
         res.status(200).json({

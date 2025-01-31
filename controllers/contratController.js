@@ -139,24 +139,21 @@ exports.getContratByUtilisateurID = async (req, res) => {
 
 exports.updateValidationStatus = async (req, res) => {
     try {
-        // Récupérer le contrat
-        const contrat = await Contrat.findById(req.params.id);
+        const { isValid } = req.body;
+
+        // Mettre à jour uniquement le champ isValid et potentiellement vider contrat
+        const updateFields = { isValid };
+        if (!isValid) {
+            updateFields.contrat = ''; // Vider le champ seulement si isValid = false
+        }
+
+        const contrat = await Contrat.findByIdAndUpdate(req.params.id, updateFields, { new: true });
+
         if (!contrat) {
             return res.status(404).json({
                 message: 'Contrat non trouvé.',
             });
         }
-
-        // Mettre à jour le statut de validation
-        const { isValid } = req.body;
-        contrat.isValid = isValid;
-
-        // Si le contrat est invalidé, vider le champ `contrat`
-        if (!isValid) {
-            contrat.contrat = '';
-        }
-
-        await contrat.save();
 
         // Informer l'utilisateur
         const utilisateur = await Utilisateur.findById(contrat.utilisateurID);
@@ -168,23 +165,10 @@ exports.updateValidationStatus = async (req, res) => {
 
         const subject = isValid ? "Contrat Validé" : "Contrat Refusé";
         const message = isValid
-            ? `
-                <h2>Bonjour ${utilisateur.nom} ${utilisateur.prenoms},</h2>
-                <p>Nous souhaitons vous rappeler qu'il est important de ne pas prendre de décisions qui pourrait entraver votre situation actuelle avant d'avoir des garanties solides.</p>
-                <p>Veuillez noter que :</p>
-                <ul>
-                    <li>* Le visa dépend uniquement de la décision de l'agent consulaire et ne peut pas être garanti.</li>
-                    <li>* Le match avec une famille repose sur la décision finale de la famille, ce qui échappe à notre contrôle.</li>
-                </ul>
-                <p>Nous mettons tout en œuvre pour vous accompagner dans le processus, mais certains aspects ne dépendent pas de nous. Nous vous conseillons donc de prendre des décisions prudentes et réfléchies en tenant compte de ces éléments.</p>
-                <p>N'hésitez pas à nous contacter pour toute question ou préoccupation.</p>
-                <p>Cordialement, L'équipe The Coast.</p>
-            `
-            : `
-                <h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
-                <p>Votre contrat a été refusé par l'administration.</p>
-                <p>Vous devez vous reconnecter et soumettre un nouveau contrat.</p>
-            `;
+            ? `<h2>Bonjour ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                <p>Votre contrat a été validé...</p>`
+            : `<h2>Hello ${utilisateur.nom} ${utilisateur.prenoms},</h2>
+                <p>Votre contrat a été refusé...</p>`;
 
         await transporter.sendMail({
             from: '"The Coast USA" <admin@thecoastusa.com>',
