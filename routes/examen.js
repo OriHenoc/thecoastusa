@@ -9,7 +9,7 @@ const {
     getExamenByUtilisateurID,
     updateExamen,
     deleteExamen,
-    //validerExamen,
+    getExamenByFormationForReponse,
     //annulerExamen,
     addQuestionToExamen,
     removeQuestionFromExamen,
@@ -24,6 +24,7 @@ router.post('/removeQuestion', removeQuestionFromExamen);
 router.post('/soumettre', submitReponses);
 router.get('/byUtilisateur/:id', getExamenByUtilisateurID);
 router.get('/byFormation/:id', getExamenByFormationID);
+router.get('/byFormationForResponse/:id', getExamenByFormationForReponse);
 router.put('/:id/updateExamen', updateExamen);
 
 // router.patch('/valider/:id', validerExamen);

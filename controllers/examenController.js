@@ -83,6 +83,32 @@ exports.getExamenByFormationID = async (req, res) => {
     }
 };
 
+exports.getExamenByFormationForReponse = async (req, res) => {
+    try {
+        // Trouver les réponses soumises par l'utilisateur
+        const reponses = await RepExamen.findOne({ examenID: req.params.id }).select('examenID');
+
+        if (!reponses.length) {
+            return res.status(404).json({ message: 'Aucun examen trouvé pour cet utilisateur !' });
+        }
+
+        // Extraire les IDs des examens uniques
+        const examenIDs = [...new Set(reponses.map(rep => rep.examenID.toString()))];
+
+        // Récupérer les examens correspondants
+        const examens = await Examen.find({ _id: { $in: examenIDs } }).populate(['formationID', 'questions']);
+
+        res.status(200).json({
+            examen : examens
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: 'Mauvaise requête !',
+            erreur: error.message
+        });
+    }
+};
+
 exports.getExamenByUtilisateurID = async (req, res) => {
     try {
         // Trouver les réponses soumises par l'utilisateur
