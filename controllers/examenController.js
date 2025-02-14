@@ -83,6 +83,21 @@ exports.getExamenByFormationID = async (req, res) => {
     }
 };
 
+exports.getExamenByUtilisateurID = async (req, res) => {
+    try {
+        const examen = await Examen.find({utilisateurID : req.params.id}).populate(['utilisateurID', 'formationID', 'questions']);
+        if (!examen) return res.status(404).json('Examen non trouvé !');
+        res.status(200).json({
+            examen : examen
+        });
+    } catch (error) {
+        res.status(400).json({
+            message : 'Mauvaise requête !',
+            erreur : error.message
+        });
+    }
+};
+
 exports.updateExamen = async (req, res) => {
     try {
         const updatedExamen = await Examen.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });

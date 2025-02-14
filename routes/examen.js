@@ -6,6 +6,7 @@ const {
     getAllExamen,
     getExamenById,
     getExamenByFormationID,
+    getExamenByUtilisateurID,
     updateExamen,
     deleteExamen,
     //validerExamen,
@@ -21,7 +22,7 @@ router.post('/', createExamen);
 router.post('/addQuestion', addQuestionToExamen);
 router.post('/removeQuestion', removeQuestionFromExamen);
 router.post('/soumettre', submitReponses);
-
+router.get('/byUtilisateur/:id', getExamenByUtilisateurID);
 router.get('/byFormation/:id', getExamenByFormationID);
 router.put('/:id/updateExamen', updateExamen);
 
