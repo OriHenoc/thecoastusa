@@ -20,6 +20,7 @@ const documentsSoumisRoute = require('./documentsSoumis');
 const contratRoute = require('./contrat');
 const formationRoute = require('./formation');
 const examenRoute = require('./examen');
+const repExamenRoute = require('./repExamen');
 const rdvRoute = require('./rdv');
 const favorisRoute = require('./favoris');
 
@@ -42,6 +43,7 @@ router.use('/documentsSoumis', documentsSoumisRoute);
 router.use('/contrat', contratRoute);
 router.use('/formation', formationRoute);
 router.use('/examen', examenRoute);
+router.use('/repExamen', repExamenRoute);
 router.use('/rdv', rdvRoute);
 router.use('/favoris', favorisRoute);
 

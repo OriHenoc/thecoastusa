@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ExamenSchema = new Schema({
-    reponse: {
+    titre: {
         type: String,
         required: [true, 'La reponse est requise']
     },
@@ -11,16 +11,12 @@ const ExamenSchema = new Schema({
         ref: 'Formation',
         required: [true, 'La formation associée est requise'],
     },
-    utilisateurID: {
-        type: Schema.Types.ObjectId,
-        ref: 'Utilisateur',
-        required: [true, 'La fille associée est requise'],
-    },
-    resultat: {
-        type: String,
-        enum: ['en_attente', 'reussi'],
-        default: "en_attente"
-    }
+    questions: [
+        {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Question',
+        },
+    ]
 }, {
     timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }
 });
