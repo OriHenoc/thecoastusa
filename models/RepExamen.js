@@ -34,6 +34,6 @@ const RepExamenSchema = new Schema({
     timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }
 });
 
-const RepExamen = mongoose.model('RepExamenSchema', RepExamenSchema);
+const RepExamen = mongoose.model('RepExamen', RepExamenSchema);
 
 module.exports = RepExamen;
