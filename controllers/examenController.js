@@ -70,7 +70,7 @@ exports.getExamenById = async (req, res) => {
 
 exports.getExamenByFormationID = async (req, res) => {
     try {
-        const examen = await Examen.find({formationID : req.params.id}).populate(['utilisateurID', 'formationID', 'questions']);
+        const examen = await Examen.find({formationID : req.params.id}).populate(['formationID', 'questions']);
         if (!examen) return res.status(404).json('Examen non trouvé !');
         res.status(200).json({
             examen : examen
@@ -85,18 +85,30 @@ exports.getExamenByFormationID = async (req, res) => {
 
 exports.getExamenByUtilisateurID = async (req, res) => {
     try {
-        const examen = await Examen.find({utilisateurID : req.params.id}).populate(['utilisateurID', 'formationID', 'questions']);
-        if (!examen) return res.status(404).json('Examen non trouvé !');
+        // Trouver les réponses soumises par l'utilisateur
+        const reponses = await RepExamen.find({ utilisateurID: req.params.id }).select('examenID');
+
+        if (!reponses.length) {
+            return res.status(404).json({ message: 'Aucun examen trouvé pour cet utilisateur !' });
+        }
+
+        // Extraire les IDs des examens uniques
+        const examenIDs = [...new Set(reponses.map(rep => rep.examenID.toString()))];
+
+        // Récupérer les examens correspondants
+        const examens = await Examen.find({ _id: { $in: examenIDs } }).populate(['formationID', 'questions']);
+
         res.status(200).json({
             examen : examen
         });
     } catch (error) {
         res.status(400).json({
-            message : 'Mauvaise requête !',
-            erreur : error.message
+            message: 'Mauvaise requête !',
+            erreur: error.message
         });
     }
 };
+
 
 exports.updateExamen = async (req, res) => {
     try {
