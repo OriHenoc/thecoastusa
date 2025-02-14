@@ -86,7 +86,7 @@ exports.getExamenByFormationID = async (req, res) => {
 exports.getExamenByFormationForReponse = async (req, res) => {
     try {
         // Trouver les réponses soumises par l'utilisateur
-        const reponses = await RepExamen.findOne({ examenID: req.params.id }).select('examenID');
+        const reponses = await RepExamen.find({ examenID: req.params.id }).select('examenID');
 
         if (!reponses.length) {
             return res.status(404).json({ message: 'Aucun examen trouvé pour cet utilisateur !' });
