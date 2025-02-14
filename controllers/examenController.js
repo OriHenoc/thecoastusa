@@ -99,7 +99,7 @@ exports.getExamenByUtilisateurID = async (req, res) => {
         const examens = await Examen.find({ _id: { $in: examenIDs } }).populate(['formationID', 'questions']);
 
         res.status(200).json({
-            examen : examen
+            examen : examens
         });
     } catch (error) {
         res.status(400).json({
