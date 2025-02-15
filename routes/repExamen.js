@@ -13,7 +13,7 @@ const router = express.Router();
 router.get('/', getAllReponses);
 router.get('/byUtilisateur/:id', getReponsesByUtilisateur);
 router.get('/byExamen/:id', getReponsesByExamen);
-router.post('/valider/:id', validerReponses);
+router.patch('/valider/:id', validerReponses);
 router.post('/refuser/:id', refuserReponses);
 
 module.exports = router;
