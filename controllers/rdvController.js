@@ -36,6 +36,17 @@ exports.takeRdv = async (req, res) => {
             `
         });
 
+        await transporter.sendMail({
+            from: '"The Coast USA" <admin@thecoastusa.com>',
+            to: fille.email,
+            subject: "Rendez-vous initié",
+            html: `
+                <h2>Hello ${fille.nom} ${fille.prenoms},</h2>
+                <p>Une famille a demandé à avoir un rendez-vous avec vous.</p>
+                <p>L'administration programmera un interview selon les disponibilités et vous tiendra informé !</p>
+            `
+        });
+
         adminEmails = ["info@thecoastusa.com", "dossier@thecoastusa.com", "contact@thecoastusa.com"]
 
         await transporter.sendMail({
